@@ -64,9 +64,145 @@
           }
         }
       }
+    },
+    "material-e2e": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/material-e2e",
+      "sourceRoot": "projects/material-e2e/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/material-e2e",
+            "index": "projects/material-e2e/src/index.html",
+            "main": "projects/material-e2e/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/material-e2e/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/material-e2e/src/favicon.ico",
+              "projects/material-e2e/src/assets"
+            ],
+            "styles": ["projects/material-e2e/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "material-e2e:build:production"
+            },
+            "development": {
+              "browserTarget": "material-e2e:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "material-e2e:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "tsConfig": "projects/material-e2e/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/material-e2e/src/favicon.ico",
+              "projects/material-e2e/src/assets"
+            ],
+            "styles": ["projects/material-e2e/src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "material-e2e:serve",
+            "configFile": "projects/material-e2e/cypress.config.js"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "material-e2e:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/material-e2e/cypress.config.js"
+          }
+        },
+        "ct": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "material-e2e:serve",
+            "watch": true,
+            "headless": false,
+            "testingType": "component"
+          },
+          "configurations": {
+            "development": {
+              "devServerTarget": "material-e2e:serve:development"
+            }
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "material-e2e:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "material-e2e:serve:production"
+            }
+          }
+        }
+      }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": ["@cypress/schematic", "@schematics/angular"]
   }
 }
