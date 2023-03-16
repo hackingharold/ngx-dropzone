@@ -1,10 +1,10 @@
 {
   "name": "@ngx-dropzone/material",
-  "version": "0.0.1",
+  "version": "0.15.0",
   "peerDependencies": {
-    "@angular/common": "~13.3.1",
-    "@angular/core": "~13.3.1",
-    "@angular/material": "~13.3.1",
+    "@angular/common": "~15.2.3",
+    "@angular/core": "~15.2.3",
+    "@angular/material": "~15.2.3",
     "@ngx-dropzone/cdk": "file:../../dist/cdk"
   },
   "dependencies": {
