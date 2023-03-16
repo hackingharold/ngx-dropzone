@@ -1,7 +1,7 @@
-import { Directive } from "@angular/core";
-import { NgControl } from "@angular/forms";
-import { Observable } from "rxjs";
-import { FileInputValue } from "./file-input-value-accessor";
+import { Directive } from '@angular/core';
+import { NgControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { FileInputValue } from './file-input-value';
 
 /** An interface which allows a control to work inside of a dropzone. */
 @Directive()
@@ -10,25 +10,25 @@ export abstract class FileInputControl {
   abstract value: FileInputValue;
 
   /** Gets the NgControl for this control. */
-  readonly abstract ngControl: NgControl | null;
+  abstract readonly ngControl: NgControl | null;
 
   /** Whether the control is disabled. */
-  readonly abstract disabled: boolean;
+  abstract readonly disabled: boolean;
 
   /** Whether the control is in an error state. */
-  readonly abstract errorState: boolean;
+  abstract readonly errorState: boolean;
 
   /** Whether the control is focused. */
-  readonly abstract focused: boolean;
+  abstract readonly focused: boolean;
 
   /** Whether the control is empty. */
-  readonly abstract empty: boolean;
+  abstract readonly empty: boolean;
 
   /**
    * Stream that emits whenever the state of the control changes
    * such that the parent dropzone needs to run change detection.
    */
-  readonly abstract stateChanges: Observable<void>;
+  abstract readonly stateChanges: Observable<void>;
 
   /** Handles the drop of a file array. */
   abstract handleFileDrop: (files: File[]) => void;

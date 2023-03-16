@@ -66,5 +66,7 @@
       }
     }
   },
-  "defaultProject": "material"
+  "cli": {
+    "analytics": false
+  }
 }

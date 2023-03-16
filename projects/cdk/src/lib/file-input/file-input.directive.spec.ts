@@ -2,8 +2,9 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { FileInputDirective } from './file-input.directive';
 import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
+import { FileInputValue } from './file-input-value';
+import { FileInputDirective } from './file-input.directive';
 
 @Component({
   template: `
@@ -11,10 +12,10 @@ import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
     <input fileInput type="file" [formControl]="fileCtrl" />
     <input fileInput type="file" multiple />
     <input fileInput type="file" disabled />
-  `
+  `,
 })
 class TestComponent {
-  fileCtrl = new FormControl(null, [Validators.required]);
+  fileCtrl = new FormControl<FileInputValue>(null, [Validators.required]);
 }
 
 /** Returns a simple fake file. */
@@ -22,7 +23,7 @@ const getFile = () => new File(['...'], `${Date.now()}.txt`);
 
 const getFileList = (files: File[]): FileList => {
   const dt = new DataTransfer();
-  files.forEach(f => dt.items.add(f));
+  files.forEach((f) => dt.items.add(f));
   return dt.files;
 };
 
@@ -47,10 +48,10 @@ describe('FileInputDirective', () => {
   });
 
   it('should return multiple property correctly', () => {
-    [0, 1].forEach(i => {
+    [0, 1].forEach((i) => {
       const element = getElement(i);
       expect(element.multiple).toBe(!!i);
-    })
+    });
   });
 
   it('should update value and fire selectionChange', () => {
@@ -132,7 +133,7 @@ describe('FileInputDirective', () => {
 
   it('should return the error state correctly', () => {
     const element = getElement(0);
-    const formControl = elements[0].componentInstance.fileCtrl as FormControl;
+    const formControl = elements[0].componentInstance.fileCtrl as FormControl<FileInputValue>;
     expect(formControl.touched).toBeFalse();
     expect(element.errorState).toBeFalse();
 

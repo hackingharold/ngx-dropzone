@@ -3,17 +3,15 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { BooleanInput, coerceBoolean } from '../coercion';
 import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
-
-export type FileInputValue = File | File[] | null;
+import { FileInputValue } from './file-input-value';
 
 @Directive()
 export abstract class FileInputValueAccessor implements ControlValueAccessor {
-
   private _value: FileInputValue = null;
   private _focused: boolean = false;
 
-  private _onChange = (_: FileInputValue) => { };
-  private _onTouched = () => { };
+  private _onChange = (_: FileInputValue) => {};
+  private _onTouched = () => {};
 
   /** Event emitted when the selected files have been changed by the user. */
   @Output() readonly selectionChange = new EventEmitter<FileInputValue>();
@@ -43,7 +41,9 @@ export abstract class FileInputValueAccessor implements ControlValueAccessor {
 
   /** The value of the file input control. */
   @Input('value')
-  get _fileValue() { return this.value; }
+  get _fileValue() {
+    return this.value;
+  }
   set _fileValue(newValue: FileInputValue) {
     /**
      * We may not use the property name `value` for the setter
@@ -65,20 +65,19 @@ export abstract class FileInputValueAccessor implements ControlValueAccessor {
   }
   set disabled(value: BooleanInput) {
     this._elementRef.nativeElement.disabled = coerceBoolean(value);
-    if (this.focused) { this._focused = false; }
+
+    if (this.focused) {
+      this._focused = false;
+    }
+
     this.stateChanges.next();
   }
 
-  constructor(
-    public ngControl: NgControl | null,
-    protected _elementRef: ElementRef<HTMLInputElement>,
-  ) { }
+  constructor(public ngControl: NgControl | null, protected _elementRef: ElementRef<HTMLInputElement>) {}
 
   /** Handles the native (change) event. */
   _handleChange(fileList: FileList) {
-    this._fileValue = this.multiple
-      ? Array.from(fileList)
-      : fileList.item(0);
+    this._fileValue = this.multiple ? Array.from(fileList) : fileList.item(0);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange(this._fileValue);

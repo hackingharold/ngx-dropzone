@@ -1,19 +1,19 @@
 import { Component, DebugElement } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { FileInputDirective, FileInputValidators } from '../file-input';
 import { DropzoneComponent } from '.';
+import { FileInputDirective, FileInputValidators, FileInputValue } from '../file-input';
 
 @Component({
   template: `
-  <ngx-dropzone>
-    <input fileInput type="file" [formControl]="fileCtrl" multiple />
-  </ngx-dropzone>
-  `
+    <ngx-dropzone>
+      <input fileInput type="file" [formControl]="fileCtrl" multiple />
+    </ngx-dropzone>
+  `,
 })
 class TestComponent {
-  fileCtrl = new FormControl(null, [FileInputValidators.minSize(200)]);
+  fileCtrl = new FormControl<FileInputValue>(null, [FileInputValidators.minSize(200)]);
 }
 
 describe('DropzoneComponent', () => {
@@ -107,7 +107,7 @@ describe('DropzoneComponent', () => {
     // Create fake file data transfer object.
     const dt = new DataTransfer();
     const getFile = () => new File(['...'], `${Date.now()}.txt`);
-    [getFile(), getFile(), getFile()].forEach(f => dt.items.add(f));
+    [getFile(), getFile(), getFile()].forEach((f) => dt.items.add(f));
 
     const drop = new DragEvent('drop', { dataTransfer: dt });
 
