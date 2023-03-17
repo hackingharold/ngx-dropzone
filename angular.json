@@ -89,7 +89,7 @@
               "projects/tests/src/favicon.ico",
               "projects/tests/src/assets"
             ],
-            "styles": ["projects/tests/src/styles.scss"],
+            "styles": [],
             "scripts": []
           },
           "configurations": {
@@ -147,7 +147,7 @@
               "projects/tests/src/favicon.ico",
               "projects/tests/src/assets"
             ],
-            "styles": ["projects/tests/src/styles.scss"],
+            "styles": [],
             "scripts": []
           }
         },
