@@ -89,7 +89,7 @@
               "projects/tests/src/favicon.ico",
               "projects/tests/src/assets"
             ],
-            "styles": [],
+            "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"],
             "scripts": []
           },
           "configurations": {
@@ -147,7 +147,7 @@
               "projects/tests/src/favicon.ico",
               "projects/tests/src/assets"
             ],
-            "styles": [],
+            "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"],
             "scripts": []
           }
         },
@@ -177,7 +177,8 @@
             "devServerTarget": "tests:serve",
             "watch": true,
             "headless": false,
-            "testingType": "component"
+            "testingType": "component",
+            "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"]
           },
           "configurations": {
             "development": {
