@@ -1,39 +1,64 @@
-import { Directive, DoCheck, ElementRef, forwardRef, OnChanges, OnDestroy, OnInit, Optional, Self } from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  forwardRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self,
+} from '@angular/core';
 import { FormGroupDirective, NgControl, NgForm } from '@angular/forms';
-import { FileInputValueAccessor } from './file-input-value-accessor';
+import { AcceptService } from './accept.service';
 import { FileInputControl } from './file-input-control';
 import { getInputTypeError } from './file-input-errors';
+import { FileInputValueAccessor } from './file-input-value-accessor';
 
 @Directive({
   selector: 'input[fileInput]',
   exportAs: 'fileInput',
   host: {
-    'style': 'display: none',
+    style: 'display: none',
     '[disabled]': 'disabled',
     '(change)': '_handleChange($event.target.files)',
     '(focus)': '_focusChanged(true)',
-    '(blur)': '_focusChanged(false)'
+    '(blur)': '_focusChanged(false)',
   },
-  providers: [{
-    provide: FileInputControl,
-    useExisting: forwardRef(() => FileInputDirective)
-  }]
+  providers: [
+    {
+      provide: FileInputControl,
+      useExisting: forwardRef(() => FileInputDirective),
+    },
+  ],
 })
 export class FileInputDirective
   extends FileInputValueAccessor
-  implements FileInputControl, OnInit, OnChanges, DoCheck, OnDestroy {
-
+  implements FileInputControl, OnInit, OnChanges, DoCheck, OnDestroy
+{
   /** Stores a reference to a possible parent form element for error checking. */
   private _parent: FormGroupDirective | NgForm | null;
 
-  /** Returns true if the control in in error state. */
+  @Input('accepts')
+  get accepts(): string {
+    return this._accepts;
+  }
+  set accepts(value: string) {
+    this._accepts = value;
+    this.updateErrorState();
+  }
+  private _accepts = '*';
+
+  /** Returns true if the control is in error state. */
   errorState: boolean = false;
 
   constructor(
+    private _acceptService: AcceptService,
     _elementRef: ElementRef<HTMLInputElement>,
     @Optional() _parentForm: NgForm,
     @Optional() _parentFormGroup: FormGroupDirective,
-    @Optional() @Self() ngControl: NgControl,
+    @Optional() @Self() ngControl: NgControl
   ) {
     super(ngControl, _elementRef);
 
@@ -70,8 +95,11 @@ export class FileInputDirective
   }
 
   private updateErrorState() {
+    console.log(this.ngControl);
+
     if (this.ngControl) {
       const control = this.ngControl.control;
+      console.log(control, this._acceptService.accepts(this.value, this._accepts));
       const errorState = !!(control?.invalid && (control?.touched || this._parent?.submitted));
 
       if (this.errorState !== errorState) {
