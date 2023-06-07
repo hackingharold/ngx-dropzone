@@ -3,5 +3,5 @@
  * without a FileInputDirective child.
  */
 export function getMissingControlError() {
-  return Error('The `ngx-dropzone` component requires a file input control child.');
+  return Error('The `ngx-dropzone` component requires a child of `<input type="file" fileInput />`.');
 }

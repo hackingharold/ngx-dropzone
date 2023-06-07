@@ -3,28 +3,24 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   HostBinding,
   Inject,
   Input,
-  NgZone,
   Optional,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import { MatFormField, MatFormFieldControl, MAT_FORM_FIELD } from '@angular/material/form-field';
 import { DropzoneComponent, FileInputValue } from 'cdk';
-import { merge, Observable, of, Subject } from 'rxjs';
-import { mapTo, tap } from 'rxjs/operators';
+import { EMPTY, merge, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'ngx-mat-dropzone',
   exportAs: 'mat-dropzone',
   template: `
     <div [class]="matDropzoneClasses">
-      <ng-content></ng-content>
+      <ng-content select="[fileInput]"></ng-content>
     </div>
-    {{ log | json }}
   `,
   styles: [
     `
@@ -56,63 +52,27 @@ import { mapTo, tap } from 'rxjs/operators';
   providers: [
     {
       provide: MatFormFieldControl,
-      useExisting: MatDropzoneComponent,
+      useExisting: MatDropzone,
     },
   ],
 })
-export class MatDropzoneComponent
-  extends DropzoneComponent
-  implements MatFormFieldControl<FileInputValue>, AfterContentInit
-{
+export class MatDropzone extends DropzoneComponent implements MatFormFieldControl<FileInputValue>, AfterContentInit {
   static nextId = 0;
 
   @HostBinding()
-  id = `mat-dropzone-component-${MatDropzoneComponent.nextId++}`;
+  id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
   controlType = 'ngx-mat-dropzone';
+  stateChanges = new Subject<void>();
+  ngControl = this.fileInputDirective?.ngControl ?? null;
 
-  // TODO: Render error state, test in "real" app.
-  // TODO: Implement other props
-  // TODO: text/image/video preview/chips (file + url)
-
-  @Input()
-  get value() {
-    return this.control?.value ?? null;
-  }
-  set value(newValue: FileInputValue) {
-    if (this.control) {
-      this.control.value = newValue;
-    }
-  }
-
-  get log() {
-    return [
-      this.control?.value,
-      this.control?.disabled,
-      this.control?.empty,
-      this.control?.errorState,
-      this.control?.focused,
-      this.value,
-      this.disabled,
-      this.empty,
-      this.errorState,
-      this.focused,
-    ];
-  }
-
-  override get focused() {
-    return this._dragover$.value;
+  get matDropzoneClasses() {
+    return [this.controlType, this._formField.appearance].join(' ');
   }
 
   get empty() {
-    return this.control ? this.control.empty : true;
+    return this.fileInputDirective?.empty ?? true;
   }
-
-  ngControl = this.control?.ngControl ?? null;
-  errorState = this.control?.errorState ?? false;
-
-  // Will be overwritten after content init.
-  stateChanges: Observable<void> = new Subject<void>();
 
   onContainerClick(_: MouseEvent): void {
     this.openFilePicker();
@@ -130,28 +90,24 @@ export class MatDropzoneComponent
   setDescribedByIds(ids: string[]): void {
     // console.log('setting ids', ids);
   }
-
-  get matDropzoneClasses() {
-    return [this.controlType, this._formField.appearance].join(' ');
-  }
+  // ^^^ TODO Ende ^^^
 
   constructor(
-    ngZone: NgZone,
-    renderer: Renderer2,
-    elementRef: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_FORM_FIELD) private _formField: MatFormField
   ) {
-    super(ngZone, renderer, elementRef, changeDetectorRef);
+    super(changeDetectorRef);
   }
 
   ngAfterContentInit() {
     super.ngAfterContentInit();
 
-    const controlChanges = this.control?.stateChanges ?? of();
-    this.stateChanges = merge(this._dragover$, controlChanges).pipe(
-      tap((f) => console.log(this.log)),
-      mapTo(undefined)
-    );
+    // Forward the stateChanges from the fileInputDirective to the MatFormFieldControl
+    merge(this.fileInputDirective?.stateChanges ?? EMPTY, this.dragover$)
+      .pipe(
+        tap(() => this.stateChanges.next()),
+        takeUntil(this._destroy$)
+      )
+      .subscribe();
   }
 }

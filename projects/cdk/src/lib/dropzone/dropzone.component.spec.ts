@@ -39,7 +39,7 @@ describe('DropzoneComponent', () => {
   });
 
   it('should create component with file input control child', () => {
-    expect(component?.control).toBeTruthy();
+    expect(component?.fileInputDirective).toBeTruthy();
     expect(fileInput?.ngControl).toBeTruthy();
   });
 

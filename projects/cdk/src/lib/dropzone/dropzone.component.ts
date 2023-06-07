@@ -4,25 +4,24 @@ import {
   ChangeDetectorRef,
   Component,
   ContentChild,
-  ElementRef,
-  NgZone,
+  HostBinding,
+  HostListener,
+  Input,
   OnDestroy,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { startWith, takeUntil, tap } from 'rxjs/operators';
-import { FileInputControl } from '../file-input/file-input-control';
+import { takeUntil, tap } from 'rxjs/operators';
+import { FileInputDirective, FileInputValue } from './../file-input';
 import { getMissingControlError } from './dropzone-errors';
-
-const dragOverClass = 'dragover';
 
 @Component({
   selector: 'ngx-dropzone',
   exportAs: 'dropzone',
   template: `<ng-content></ng-content>`,
   host: {
+    '[attr.aria-invalid]': 'errorState',
     '[class.disabled]': 'disabled',
     '[class.focused]': 'focused',
     '[class.ng-untouched]': '_forwardProp("untouched")',
@@ -37,52 +36,50 @@ const dragOverClass = 'dragover';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropzoneComponent implements AfterContentInit, OnDestroy {
-  private _dropzone!: HTMLElement;
-  private _destroy$ = new Subject();
+  protected _destroy$ = new Subject();
 
-  /** Emits when the dragover state changes. */
-  protected _dragover$ = new BehaviorSubject<boolean>(false);
+  @ContentChild(FileInputDirective, { static: true })
+  readonly fileInputDirective: FileInputDirective | null = null;
 
-  @ContentChild(FileInputControl, { static: true })
-  control: FileInputControl | null = null;
+  readonly dragover$ = new BehaviorSubject<boolean>(false);
 
-  /** Returns true when the contained input control is disabled. */
+  @HostBinding('class.dragover')
+  get isDragover() {
+    return this.dragover$.value;
+  }
+
   get disabled(): boolean {
-    return this.control?.disabled ?? false;
+    return this.fileInputDirective?.disabled ?? false;
   }
 
-  /** Returns true when the contained input control is focused. */
   get focused(): boolean {
-    return this.control?.focused ?? false;
+    return this.fileInputDirective?.focused || this.isDragover;
   }
 
-  constructor(
-    protected _ngZone: NgZone,
-    protected _renderer: Renderer2,
-    protected _elementRef: ElementRef<HTMLElement>,
-    protected _changeDetectorRef: ChangeDetectorRef
-  ) {}
-
-  ngOnInit() {
-    this._dropzone = this._elementRef.nativeElement;
-
-    // I found this to be the most performant way to register event listeners.
-    this._ngZone.runOutsideAngular(() => {
-      this._dropzone.addEventListener('dragenter', this.onDragEnter);
-      this._dropzone.addEventListener('dragleave', this.onDragLeave);
-      this._dropzone.addEventListener('drop', this.onDrop);
-    });
+  get errorState() {
+    return this.fileInputDirective?.errorState ?? false;
   }
+
+  @Input()
+  get value() {
+    return this.fileInputDirective?.value ?? null;
+  }
+  set value(newValue: FileInputValue) {
+    if (this.fileInputDirective) {
+      this.fileInputDirective._fileValue = newValue;
+    }
+  }
+
+  constructor(protected _changeDetectorRef: ChangeDetectorRef) {}
 
   ngAfterContentInit() {
-    if (!this.control) {
+    if (!this.fileInputDirective) {
       throw getMissingControlError();
     }
 
-    // Update dropzone when control state changed.
-    this.control.stateChanges
+    // Forward state changes from the child input element.
+    this.fileInputDirective.stateChanges
       .pipe(
-        startWith(null),
         tap(() => this._changeDetectorRef.markForCheck()),
         takeUntil(this._destroy$)
       )
@@ -90,52 +87,48 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._dropzone.removeEventListener('dragenter', this.onDragEnter);
-    this._dropzone.removeEventListener('dragleave', this.onDragLeave);
-    this._dropzone.removeEventListener('drop', this.onDrop);
-
     this._destroy$.next();
     this._destroy$.complete();
   }
 
   /** Opens the native OS file picker. */
   openFilePicker() {
-    if (!this.disabled && this.control) {
-      this.control.openFilePicker();
+    if (!this.disabled && this.fileInputDirective) {
+      this.fileInputDirective.openFilePicker();
     }
   }
 
   /** Forwards styling property from control to host element. */
   _forwardProp(prop: keyof NgControl): boolean {
-    return !!this.control?.ngControl?.[prop];
+    return !!this.fileInputDirective?.ngControl?.[prop];
   }
 
-  private onDragEnter = (event: DragEvent) => {
+  @HostListener('dragenter', ['$event'])
+  _onDragEnter = (event: DragEvent) => {
     event?.preventDefault();
+    this.dragover$.next(true);
 
-    this._dragover$.next(true);
-    this._renderer.addClass(this._dropzone, dragOverClass);
-
+    // Indicate to the Browser that files will be copied.
     if (event?.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
     }
   };
 
-  private onDragLeave = (event: DragEvent) => {
+  @HostListener('dragleave', ['$event'])
+  _onDragLeave = (event: DragEvent) => {
     event?.preventDefault();
-
-    this._dragover$.next(false);
-    this._renderer.removeClass(this._dropzone, dragOverClass);
+    this.dragover$.next(false);
   };
 
-  private onDrop = (event: DragEvent) => {
-    this.onDragLeave(event);
+  @HostListener('drop', ['$event'])
+  _onDrop = (event: DragEvent) => {
+    this._onDragLeave(event);
 
-    const files = this.getDroppedFiles(event);
-    this.control?.handleFileDrop(files);
+    const files = this._getDroppedFiles(event);
+    this.fileInputDirective?.handleFileDrop(files);
   };
 
-  private getDroppedFiles(event: DragEvent): File[] {
+  private _getDroppedFiles(event: DragEvent): File[] {
     if (event.dataTransfer?.items) {
       const files = Array.from(event.dataTransfer.items)
         .filter((item) => item.kind === 'file')

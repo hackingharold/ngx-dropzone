@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { CdkModule } from 'cdk';
-import { MatDropzoneComponent } from './mat-dropzone.component';
+import { MatDropzone } from './mat-dropzone.component';
 
 @NgModule({
-  declarations: [MatDropzoneComponent],
+  declarations: [MatDropzone],
   imports: [CdkModule, CommonModule],
-  exports: [MatDropzoneComponent],
+  exports: [MatDropzone],
 })
 export class MaterialModule {}
