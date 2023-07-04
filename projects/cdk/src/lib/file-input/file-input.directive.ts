@@ -76,7 +76,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
 
   /** Returns true if the `multiple` attribute is present on the input element. */
   get multiple(): boolean {
-    return this._elementRef.nativeElement.multiple;
+    return this.elementRef.nativeElement.multiple;
   }
 
   /** Controls the accepted file types. */
@@ -95,10 +95,10 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
   /** The disabled state of the file input control. */
   @Input()
   get disabled(): boolean {
-    return this.ngControl?.disabled || this._parent?.disabled || this._elementRef.nativeElement.disabled;
+    return this.ngControl?.disabled || this._parent?.disabled || this.elementRef.nativeElement.disabled;
   }
   set disabled(value: BooleanInput) {
-    this._elementRef.nativeElement.disabled = coerceBoolean(value);
+    this.elementRef.nativeElement.disabled = coerceBoolean(value);
 
     if (this.focused) {
       this._focused = false;
@@ -112,7 +112,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
 
   constructor(
     private _acceptService: AcceptService,
-    private _elementRef: ElementRef<HTMLInputElement>,
+    public elementRef: ElementRef<HTMLInputElement>,
     @Optional() _parentForm: NgForm,
     @Optional() _parentFormGroup: FormGroupDirective,
     @Optional() @Self() public ngControl: NgControl
@@ -127,7 +127,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
   }
 
   ngOnInit() {
-    if (this._elementRef.nativeElement.type !== 'file') {
+    if (this.elementRef.nativeElement.type !== 'file') {
       throw getInputTypeError();
     }
   }
@@ -146,7 +146,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
 
   /** Opens the native OS file picker. */
   openFilePicker() {
-    this._elementRef.nativeElement.click();
+    this.elementRef.nativeElement.click();
   }
 
   /** Handles the native (change) event. */
@@ -157,7 +157,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
     this._onChange(this._fileValue);
 
     // Reset the native element for another selection.
-    this._elementRef.nativeElement.value = '';
+    this.elementRef.nativeElement.value = '';
   }
 
   /** Handles the drop of a file array. */

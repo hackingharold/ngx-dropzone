@@ -8,8 +8,7 @@ import { MaterialModule } from 'material';
 
 const fixture = `
     <mat-form-field appearance="outline">
-      <ngx-mat-dropzone>
-        <mat-label>Drop it!</mat-label> <!-- should be ignored -->
+      <ngx-mat-dropzone required>
         <input type="file" fileInput accepts="image/jpeg" />
       </ngx-mat-dropzone>
       <mat-error>Invalid file!</mat-error>
@@ -19,7 +18,6 @@ const fixture = `
 
     <mat-form-field appearance="fill">
       <ngx-mat-dropzone>
-        <mat-label>Drop it!</mat-label>
         <input type="file" fileInput />
       </ngx-mat-dropzone>
     </mat-form-field>

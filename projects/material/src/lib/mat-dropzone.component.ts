@@ -3,14 +3,16 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   HostBinding,
   Inject,
   Input,
   Optional,
   ViewEncapsulation,
 } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { MatFormField, MatFormFieldControl, MAT_FORM_FIELD } from '@angular/material/form-field';
-import { DropzoneComponent, FileInputValue } from 'cdk';
+import { coerceBoolean, DropzoneComponent, FileInputValue } from 'cdk';
 import { EMPTY, merge, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 
@@ -19,9 +21,14 @@ import { takeUntil, tap } from 'rxjs/operators';
   exportAs: 'mat-dropzone',
   template: `
     <div [class]="matDropzoneClasses">
+      <mat-label>{{ placeholder }}</mat-label>
       <ng-content select="[fileInput]"></ng-content>
     </div>
   `,
+  host: {
+    '[attr.aria-required]': 'required',
+    '[attr.aria-invalid]': '(empty && required) ? null : errorState',
+  },
   styles: [
     `
       .ngx-mat-dropzone {
@@ -63,8 +70,44 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
   controlType = 'ngx-mat-dropzone';
+
+  // Always center the label
+  shouldLabelFloat = false;
+
+  // The file input is never autofilled
+  autofilled = false;
+
   stateChanges = new Subject<void>();
   ngControl = this.fileInputDirective?.ngControl ?? null;
+
+  @Input('aria-describedby')
+  userAriaDescribedBy?: string | undefined;
+
+  @Input()
+  get placeholder(): string {
+    return this._placeholder;
+  }
+  set placeholder(value: string) {
+    this._placeholder = value;
+    this.stateChanges.next();
+  }
+  private _placeholder = 'Drop it!';
+
+  @Input()
+  get required(): boolean {
+    const controlRequired = this.ngControl?.control?.hasValidator(Validators.required);
+    return this._required ?? controlRequired ?? false;
+  }
+  set required(value: boolean) {
+    this._required = coerceBoolean(value);
+
+    if (this.fileInputDirective) {
+      this.fileInputDirective.elementRef.nativeElement.required = this._required;
+    }
+
+    this.stateChanges.next();
+  }
+  private _required = false;
 
   get matDropzoneClasses() {
     return [this.controlType, this._formField.appearance].join(' ');
@@ -74,26 +117,9 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     return this.fileInputDirective?.empty ?? true;
   }
 
-  onContainerClick(_: MouseEvent): void {
-    this.openFilePicker();
-  }
-
-  // vvv TODO vvv
-  placeholder = 'Placeholder example';
-  shouldLabelFloat = false;
-  required = false;
-  autofilled = false;
-
-  @Input('aria-describedby')
-  userAriaDescribedBy?: string | undefined;
-
-  setDescribedByIds(ids: string[]): void {
-    // console.log('setting ids', ids);
-  }
-  // ^^^ TODO Ende ^^^
-
   constructor(
     changeDetectorRef: ChangeDetectorRef,
+    private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Inject(MAT_FORM_FIELD) private _formField: MatFormField
   ) {
     super(changeDetectorRef);
@@ -109,5 +135,17 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
         takeUntil(this._destroy$)
       )
       .subscribe();
+  }
+
+  onContainerClick(_: MouseEvent): void {
+    this.openFilePicker();
+  }
+
+  setDescribedByIds(ids: string[]): void {
+    if (ids.length) {
+      this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
+    } else {
+      this._elementRef.nativeElement.removeAttribute('aria-describedby');
+    }
   }
 }
