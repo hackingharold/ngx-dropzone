@@ -5,13 +5,11 @@ import {
   Component,
   ElementRef,
   HostBinding,
-  Inject,
   Input,
-  Optional,
   ViewEncapsulation,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { MatFormField, MatFormFieldControl, MAT_FORM_FIELD } from '@angular/material/form-field';
+import { MatFormFieldControl } from '@angular/material/form-field';
 import { coerceBoolean, DropzoneComponent, FileInputValue } from 'cdk';
 import { EMPTY, merge, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -20,7 +18,7 @@ import { takeUntil, tap } from 'rxjs/operators';
   selector: 'ngx-mat-dropzone',
   exportAs: 'mat-dropzone',
   template: `
-    <div [class]="matDropzoneClasses">
+    <div [class]="controlType">
       <mat-label>{{ placeholder }}</mat-label>
       <ng-content select="[fileInput]"></ng-content>
     </div>
@@ -35,22 +33,15 @@ import { takeUntil, tap } from 'rxjs/operators';
         cursor: pointer;
         text-align: center;
         padding: 28px 20px;
+        margin: -16px;
       }
 
       .ngx-mat-dropzone * {
         pointer-events: none;
       }
 
-      .ngx-mat-dropzone.fill {
-        margin: -24px -16px -8px -16px;
-      }
-
       .dragover > .ngx-mat-dropzone.fill {
         background-color: #00000016;
-      }
-
-      .ngx-mat-dropzone.outline {
-        margin: -16px;
       }
     `,
   ],
@@ -109,19 +100,11 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   }
   private _required = false;
 
-  get matDropzoneClasses() {
-    return [this.controlType, this._formField.appearance].join(' ');
-  }
-
   get empty() {
     return this.fileInputDirective?.empty ?? true;
   }
 
-  constructor(
-    changeDetectorRef: ChangeDetectorRef,
-    private _elementRef: ElementRef<HTMLElement>,
-    @Optional() @Inject(MAT_FORM_FIELD) private _formField: MatFormField
-  ) {
+  constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef<HTMLElement>) {
     super(changeDetectorRef);
   }
 
