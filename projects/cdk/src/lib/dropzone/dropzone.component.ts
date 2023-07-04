@@ -21,6 +21,7 @@ import { getMissingControlError } from './dropzone-errors';
   exportAs: 'dropzone',
   template: `<ng-content></ng-content>`,
   host: {
+    tabindex: '0',
     '[attr.aria-invalid]': 'errorState',
     '[class.disabled]': 'disabled',
     '[class.focused]': 'focused',
@@ -30,6 +31,7 @@ import { getMissingControlError } from './dropzone-errors';
     '[class.ng-dirty]': '_forwardProp("dirty")',
     '[class.ng-valid]': '_forwardProp("valid")',
     '[class.ng-invalid]': '_forwardProp("invalid")',
+    '(keydown.code.enter)': 'openFilePicker()',
     ondragover: 'event.preventDefault()',
   },
   encapsulation: ViewEncapsulation.None,
