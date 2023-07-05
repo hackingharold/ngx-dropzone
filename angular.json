@@ -65,29 +65,29 @@
         }
       }
     },
-    "tests": {
+    "app": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/tests",
-      "sourceRoot": "projects/tests/src",
+      "root": "projects/app",
+      "sourceRoot": "projects/app/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/tests",
-            "index": "projects/tests/src/index.html",
-            "main": "projects/tests/src/main.ts",
+            "outputPath": "dist/app",
+            "index": "projects/app/src/index.html",
+            "main": "projects/app/src/main.ts",
             "polyfills": ["zone.js"],
-            "tsConfig": "projects/tests/tsconfig.app.json",
+            "tsConfig": "projects/app/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/tests/src/favicon.ico",
-              "projects/tests/src/assets"
+              "projects/app/src/favicon.ico",
+              "projects/app/src/assets"
             ],
             "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"],
             "scripts": []
@@ -123,10 +123,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "tests:build:production"
+              "browserTarget": "app:build:production"
             },
             "development": {
-              "browserTarget": "tests:build:development"
+              "browserTarget": "app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -134,18 +134,18 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tests:build"
+            "browserTarget": "app:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "projects/tests/tsconfig.spec.json",
+            "tsConfig": "projects/app/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/tests/src/favicon.ico",
-              "projects/tests/src/assets"
+              "projects/app/src/favicon.ico",
+              "projects/app/src/assets"
             ],
             "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"],
             "scripts": []
@@ -154,12 +154,12 @@
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "tests:serve",
-            "configFile": "projects/tests/cypress.config.js"
+            "devServerTarget": "app:serve",
+            "configFile": "projects/app/cypress.config.js"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "tests:serve:production"
+              "devServerTarget": "app:serve:production"
             }
           }
         },
@@ -168,13 +168,13 @@
           "options": {
             "watch": true,
             "headless": false,
-            "configFile": "projects/tests/cypress.config.js"
+            "configFile": "projects/app/cypress.config.js"
           }
         },
         "ct": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "tests:serve",
+            "devServerTarget": "app:serve",
             "watch": true,
             "headless": false,
             "testingType": "component",
@@ -182,20 +182,20 @@
           },
           "configurations": {
             "development": {
-              "devServerTarget": "tests:serve:development"
+              "devServerTarget": "app:serve:development"
             }
           }
         },
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "tests:serve",
+            "devServerTarget": "app:serve",
             "watch": true,
             "headless": false
           },
           "configurations": {
             "production": {
-              "devServerTarget": "tests:serve:production"
+              "devServerTarget": "app:serve:production"
             }
           }
         }
