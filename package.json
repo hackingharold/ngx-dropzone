@@ -6,8 +6,7 @@
     "start": "npm run watch",
     "build": "ng build",
     "watch": "ng build --watch --configuration production",
-    "test": "ng test",
-    "cypress": "ng run tests:ct"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -29,7 +28,6 @@
     "@angular-devkit/build-angular": "^15.2.4",
     "@angular/cli": "^15.2.4",
     "@angular/compiler-cli": "^15.2.3",
-    "@cypress/schematic": "^2.5.0",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
     "jasmine-core": "~3.8.0",
@@ -39,7 +37,6 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "ng-packagr": "^15.2.2",
-    "typescript": "~4.9.5",
-    "cypress": "latest"
+    "typescript": "~4.9.5"
   }
 }

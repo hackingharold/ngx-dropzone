@@ -150,60 +150,12 @@
             "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"],
             "scripts": []
           }
-        },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "app:serve",
-            "configFile": "projects/app/cypress.config.js"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "app:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": false,
-            "configFile": "projects/app/cypress.config.js"
-          }
-        },
-        "ct": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "app:serve",
-            "watch": true,
-            "headless": false,
-            "testingType": "component",
-            "styles": ["@angular/material/prebuilt-themes/indigo-pink.css"]
-          },
-          "configurations": {
-            "development": {
-              "devServerTarget": "app:serve:development"
-            }
-          }
-        },
-        "e2e": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "app:serve",
-            "watch": true,
-            "headless": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "app:serve:production"
-            }
-          }
         }
       }
     }
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": ["@cypress/schematic", "@schematics/angular"]
+    "schematicCollections": ["@schematics/angular"]
   }
 }
