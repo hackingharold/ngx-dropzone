@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { CdkModule } from 'cdk';
+import { DropzoneCdkModule } from 'cdk';
 import { MatDropzone } from './mat-dropzone.component';
 
 @NgModule({
   declarations: [MatDropzone],
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, CdkModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, DropzoneCdkModule],
   exports: [MatDropzone],
 })
-export class MaterialModule {}
+export class DropzoneMaterialModule {}

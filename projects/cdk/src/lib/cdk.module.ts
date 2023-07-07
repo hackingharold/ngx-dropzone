@@ -6,4 +6,4 @@ import { FileInputDirective } from './file-input';
   declarations: [FileInputDirective, DropzoneComponent],
   exports: [FileInputDirective, DropzoneComponent],
 })
-export class CdkModule {}
+export class DropzoneCdkModule {}

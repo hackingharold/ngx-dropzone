@@ -4,8 +4,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CdkModule } from 'cdk';
-import { MaterialModule } from 'material';
+import { DropzoneCdkModule } from 'cdk';
+import { DropzoneMaterialModule } from 'material';
 import { AppComponent } from './app.component';
 
 @NgModule({
@@ -16,8 +16,8 @@ import { AppComponent } from './app.component';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    CdkModule,
-    MaterialModule,
+    DropzoneCdkModule,
+    DropzoneMaterialModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
