@@ -31,7 +31,6 @@ import { getMissingControlError } from './dropzone-errors';
     '[class.ng-dirty]': '_forwardProp("dirty")',
     '[class.ng-valid]': '_forwardProp("valid")',
     '[class.ng-invalid]': '_forwardProp("invalid")',
-    '(keydown.code.enter)': 'openFilePicker()',
     ondragover: 'event.preventDefault()',
   },
   encapsulation: ViewEncapsulation.None,
@@ -94,6 +93,7 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   }
 
   /** Opens the native OS file picker. */
+  @HostListener('keydown.code.enter')
   openFilePicker() {
     if (!this.disabled && this.fileInputDirective) {
       this.fileInputDirective.openFilePicker();

@@ -14,6 +14,7 @@ export class AcceptService {
     if (!fileValue) {
       return false;
     }
+
     if (accept === '*') {
       return true;
     }

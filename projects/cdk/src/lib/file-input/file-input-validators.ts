@@ -27,9 +27,8 @@ export class FileInputValidators {
 
   /** Checks if all provided files match the specified `accept` value. */
   static accept(accept: string): ValidatorFn {
-    const { accepts } = new AcceptService();
     return (control: AbstractControl): ValidationErrors | null => {
-      const allAccepted = accepts(control.value, accept);
+      const allAccepted = new AcceptService().accepts(control.value, accept);
       return allAccepted ? null : { accept: { value: control.value } };
     };
   }

@@ -91,11 +91,6 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   }
   set required(value: boolean) {
     this._required = coerceBoolean(value);
-
-    if (this.fileInputDirective) {
-      this.fileInputDirective.elementRef.nativeElement.required = this._required;
-    }
-
     this.stateChanges.next();
   }
   private _required = false;

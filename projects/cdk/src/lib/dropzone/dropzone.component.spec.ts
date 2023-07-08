@@ -1,123 +1,167 @@
-import { Component, DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, Type } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { DropzoneComponent } from '.';
 import { FileInputDirective, FileInputValidators, FileInputValue } from '../file-input';
+import { DropzoneCdkModule } from './../cdk.module';
+import { DropzoneComponent } from './dropzone.component';
 
-@Component({
-  template: `
-    <ngx-dropzone>
-      <input fileInput type="file" [formControl]="fileCtrl" multiple />
-    </ngx-dropzone>
-  `,
-})
-class TestComponent {
-  fileCtrl = new FormControl<FileInputValue>(null, [FileInputValidators.minSize(200)]);
+interface Selectors<T> {
+  fixture: ComponentFixture<T>;
+  element: DebugElement;
+  inputElement: DebugElement;
+  component: DropzoneComponent;
+  fileInput: FileInputDirective;
 }
 
 describe('DropzoneComponent', () => {
-  let fixture: ComponentFixture<TestComponent>;
-  let element: DebugElement;
-  let component: DropzoneComponent;
-  let inputElement: DebugElement;
-  let fileInput: FileInputDirective;
+  function configureDropzoneTestingModule<T>(testComponent: Type<T>): Selectors<T> {
+    const fixture = TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, DropzoneCdkModule],
+      declarations: [testComponent],
+    }).createComponent(testComponent);
 
-  beforeEach(() => {
-    fixture = TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [DropzoneComponent, FileInputDirective, TestComponent],
-    }).createComponent(TestComponent);
+    const element = fixture.debugElement.query(By.directive(DropzoneComponent));
+    const component = element.componentInstance;
 
-    element = fixture.debugElement.query(By.directive(DropzoneComponent));
-    component = element.componentInstance;
-
-    inputElement = fixture.debugElement.query(By.directive(FileInputDirective));
-    fileInput = inputElement.injector.get(FileInputDirective);
+    const inputElement = fixture.debugElement.query(By.directive(FileInputDirective));
+    const fileInput = inputElement.injector.get(FileInputDirective);
 
     fixture.detectChanges();
+
+    return {
+      fixture,
+      element,
+      component,
+      inputElement,
+      fileInput,
+    };
+  }
+
+  describe('basic', () => {
+    let selectors: Selectors<DropzoneBasic>;
+
+    beforeEach(waitForAsync(() => {
+      selectors = configureDropzoneTestingModule(DropzoneBasic);
+    }));
+
+    it('should create component with file input child', () => {
+      expect(selectors.component).toBeTruthy();
+      expect(selectors.fileInput).toBeTruthy();
+    });
+
+    it('should forward the focused property', () => {
+      expect(selectors.fileInput.focused).toBeFalse();
+      expect(selectors.component.focused).toBeFalse();
+
+      selectors.inputElement.nativeElement.dispatchEvent(new Event('focus'));
+      selectors.fixture.detectChanges();
+
+      expect(selectors.component.focused).toBeTrue();
+      expect(selectors.element.nativeElement.classList).toContain('focused');
+    });
+
+    it('should add and remove "dragover" class', () => {
+      const dragEnter = new DragEvent('dragenter');
+      const dragLeave = new DragEvent('dragleave');
+
+      expect(selectors.element.nativeElement.classList).not.toContain('dragover');
+
+      selectors.element.nativeElement.dispatchEvent(dragEnter);
+      selectors.fixture.detectChanges();
+      expect(selectors.element.nativeElement.classList).toContain('dragover');
+
+      selectors.element.nativeElement.dispatchEvent(dragLeave);
+      selectors.fixture.detectChanges();
+      expect(selectors.element.nativeElement.classList).not.toContain('dragover');
+    });
+
+    it('should open native file picker on keyboard press', () => {
+      spyOn(selectors.component, 'openFilePicker').and.callThrough();
+
+      selectors.element.nativeElement.dispatchEvent(new Event('focus'));
+      selectors.element.nativeElement.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter' }));
+
+      selectors.fixture.detectChanges();
+      expect(selectors.component.openFilePicker).toHaveBeenCalled();
+    });
   });
 
-  it('should create component with file input control child', () => {
-    expect(component?.fileInputDirective).toBeTruthy();
-    expect(fileInput?.ngControl).toBeTruthy();
-  });
+  describe('form control', () => {
+    let selectors: Selectors<DropzoneWithFormControl>;
 
-  it('should forward the disabled property', () => {
-    expect(fileInput.disabled).toBeFalse();
-    expect(component.disabled).toBeFalse();
+    beforeEach(waitForAsync(() => {
+      selectors = configureDropzoneTestingModule(DropzoneWithFormControl);
+    }));
 
-    fileInput.ngControl?.control?.disable();
-    fixture.detectChanges();
+    it('should forward the disabled property', () => {
+      expect(selectors.fileInput.disabled).toBeFalse();
+      expect(selectors.component.disabled).toBeFalse();
 
-    expect(component.disabled).toBeTrue();
-    expect(element.nativeElement.classList).toContain('disabled');
-  });
+      selectors.fileInput.ngControl?.control?.disable();
+      selectors.fixture.detectChanges();
 
-  it('should forward the focused property', () => {
-    expect(fileInput.focused).toBeFalse();
-    expect(component.focused).toBeFalse();
+      expect(selectors.component.disabled).toBeTrue();
+      expect(selectors.element.nativeElement.classList).toContain('disabled');
+    });
 
-    inputElement.nativeElement.dispatchEvent(new Event('focus'));
-    fixture.detectChanges();
+    it('should update form control value after file drop', () => {
+      const dataTransfer = new DataTransfer();
+      const getFile = () => new File(['...'], `${Date.now()}.txt`);
+      [getFile(), getFile(), getFile()].forEach((f) => dataTransfer.items.add(f));
 
-    expect(component.focused).toBeTrue();
-    expect(element.nativeElement.classList).toContain('focused');
-  });
+      const drop = new DragEvent('drop', { dataTransfer });
 
-  it('should apply form control state classes', () => {
-    expect(element.nativeElement.classList).toContain('ng-pristine');
-    expect(element.nativeElement.classList).toContain('ng-untouched');
-    expect(element.nativeElement.classList).toContain('ng-valid');
-    expect(element.nativeElement.classList).not.toContain('ng-dirty');
-    expect(element.nativeElement.classList).not.toContain('ng-touched');
-    expect(element.nativeElement.classList).not.toContain('ng-invalid');
+      selectors.element.nativeElement.dispatchEvent(drop);
+      selectors.fixture.detectChanges();
 
-    const invalidFile = new File(['...'], `${Date.now()}.txt`);
-    fileInput.ngControl?.control?.setValue([invalidFile]);
-    fileInput.ngControl?.control?.markAsDirty(); // simulate user UI action
-    fixture.detectChanges();
+      expect(selectors.element.nativeElement.classList).not.toContain('dragover');
+      expect((selectors.fileInput.value as File[]).length).toEqual(3);
+    });
 
-    expect(element.nativeElement.classList).not.toContain('ng-pristine');
-    expect(element.nativeElement.classList).not.toContain('ng-untouched');
-    expect(element.nativeElement.classList).not.toContain('ng-valid');
-    expect(element.nativeElement.classList).toContain('ng-dirty');
-    expect(element.nativeElement.classList).toContain('ng-touched');
-    expect(element.nativeElement.classList).toContain('ng-invalid');
-  });
+    it('should apply form control state classes', () => {
+      const nativeElement = selectors.element.nativeElement;
 
-  it('should add and remove "dragover" class', () => {
-    const dragEnter = new DragEvent('dragenter');
-    const dragLeave = new DragEvent('dragleave');
+      expect(nativeElement.classList).toContain('ng-pristine');
+      expect(nativeElement.classList).toContain('ng-untouched');
+      expect(nativeElement.classList).toContain('ng-valid');
+      expect(nativeElement.classList).not.toContain('ng-dirty');
+      expect(nativeElement.classList).not.toContain('ng-touched');
+      expect(nativeElement.classList).not.toContain('ng-invalid');
 
-    expect(element.nativeElement.classList).not.toContain('dragover');
+      const invalidFile = new File(['...'], `${Date.now()}.txt`);
+      selectors.fileInput.ngControl?.control?.setValue([invalidFile]);
+      selectors.fileInput.ngControl?.control?.markAsDirty(); // simulate user UI action
+      selectors.fixture.detectChanges();
 
-    element.nativeElement.dispatchEvent(dragEnter);
-    fixture.detectChanges();
-    expect(element.nativeElement.classList).toContain('dragover');
-
-    element.nativeElement.dispatchEvent(dragLeave);
-    fixture.detectChanges();
-    expect(element.nativeElement.classList).not.toContain('dragover');
-  });
-
-  it('should update form control value after file drop', () => {
-    const dragEnter = new DragEvent('dragenter');
-
-    // Create fake file data transfer object.
-    const dt = new DataTransfer();
-    const getFile = () => new File(['...'], `${Date.now()}.txt`);
-    [getFile(), getFile(), getFile()].forEach((f) => dt.items.add(f));
-
-    const drop = new DragEvent('drop', { dataTransfer: dt });
-
-    element.nativeElement.dispatchEvent(dragEnter);
-    fixture.detectChanges();
-    expect(element.nativeElement.classList).toContain('dragover');
-
-    element.nativeElement.dispatchEvent(drop);
-    fixture.detectChanges();
-    expect(element.nativeElement.classList).not.toContain('dragover');
-    expect((fileInput.value as File[]).length).toEqual(3);
+      expect(nativeElement.classList).not.toContain('ng-pristine');
+      expect(nativeElement.classList).not.toContain('ng-untouched');
+      expect(nativeElement.classList).not.toContain('ng-valid');
+      expect(nativeElement.classList).toContain('ng-dirty');
+      expect(nativeElement.classList).toContain('ng-touched');
+      expect(nativeElement.classList).toContain('ng-invalid');
+    });
   });
 });
+
+@Component({
+  selector: 'basic-dropzone',
+  template: `
+    <ngx-dropzone>
+      <input type="file" fileInput />
+    </ngx-dropzone>
+  `,
+})
+class DropzoneBasic {}
+
+@Component({
+  selector: 'form-control-dropzone',
+  template: `
+    <ngx-dropzone>
+      <input type="file" fileInput [formControl]="fileCtrl" multiple />
+    </ngx-dropzone>
+  `,
+})
+class DropzoneWithFormControl {
+  fileCtrl = new FormControl<FileInputValue>(null, [FileInputValidators.minSize(200)]);
+}
