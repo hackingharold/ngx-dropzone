@@ -23,10 +23,6 @@ import { takeUntil, tap } from 'rxjs/operators';
       <ng-content select="[fileInput]"></ng-content>
     </div>
   `,
-  host: {
-    '[attr.aria-required]': 'required',
-    '[attr.aria-invalid]': '(empty && required) ? null : errorState',
-  },
   styles: [
     `
       .ngx-mat-dropzone {
@@ -85,6 +81,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   private _placeholder = 'Drop it!';
 
   @Input()
+  @HostBinding('attr.aria-required')
   get required(): boolean {
     const controlRequired = this.ngControl?.control?.hasValidator(Validators.required);
     return this._required ?? controlRequired ?? false;
@@ -97,6 +94,11 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
 
   get empty() {
     return this.fileInputDirective?.empty ?? true;
+  }
+
+  @HostBinding('attr.aria-invalid')
+  get ariaInvalid() {
+    return this.empty && this.required ? null : this.errorState;
   }
 
   constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef<HTMLElement>) {
@@ -115,7 +117,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
       .subscribe();
   }
 
-  onContainerClick(_: MouseEvent): void {
+  onContainerClick(): void {
     this.openFilePicker();
   }
 

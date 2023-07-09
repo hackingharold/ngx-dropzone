@@ -6,18 +6,6 @@ import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
 import { FileInputValue } from './file-input-value';
 import { FileInputDirective } from './file-input.directive';
 
-@Component({
-  template: `
-    <input type="file" />
-    <input fileInput type="file" [formControl]="fileCtrl" />
-    <input fileInput type="file" multiple />
-    <input fileInput type="file" disabled />
-  `,
-})
-class TestComponent {
-  fileCtrl = new FormControl<FileInputValue>(null, [Validators.required]);
-}
-
 /** Returns a simple fake file. */
 const getFile = () => new File(['...'], `${Date.now()}.txt`);
 
@@ -175,3 +163,15 @@ describe('FileInputDirective', () => {
     expect(element.empty).toBeFalse();
   });
 });
+
+@Component({
+  template: `
+    <input type="file" />
+    <input fileInput type="file" [formControl]="fileCtrl" />
+    <input fileInput type="file" multiple />
+    <input fileInput type="file" disabled />
+  `,
+})
+class TestComponent {
+  fileCtrl = new FormControl<FileInputValue>(null, [Validators.required]);
+}

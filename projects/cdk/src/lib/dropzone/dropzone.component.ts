@@ -22,9 +22,6 @@ import { getMissingControlError } from './dropzone-errors';
   template: `<ng-content></ng-content>`,
   host: {
     tabindex: '0',
-    '[attr.aria-invalid]': 'errorState',
-    '[class.disabled]': 'disabled',
-    '[class.focused]': 'focused',
     '[class.ng-untouched]': '_forwardProp("untouched")',
     '[class.ng-touched]': '_forwardProp("touched")',
     '[class.ng-pristine]': '_forwardProp("pristine")',
@@ -49,14 +46,17 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
     return this.dragover$.value;
   }
 
+  @HostBinding('class.disabled')
   get disabled(): boolean {
     return this.fileInputDirective?.disabled ?? false;
   }
 
+  @HostBinding('class.focused')
   get focused(): boolean {
     return this.fileInputDirective?.focused || this.isDragover;
   }
 
+  @HostBinding('attr.aria-invalid')
   get errorState() {
     return this.fileInputDirective?.errorState ?? false;
   }
@@ -133,8 +133,8 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   private _getDroppedFiles(event: DragEvent): File[] {
     if (event.dataTransfer?.items) {
       const files = Array.from(event.dataTransfer.items)
-        .filter((item) => item.kind === 'file')
-        .map((file) => file.getAsFile()!);
+        .map((file) => file.getAsFile())
+        .filter((file) => file !== null) as File[];
 
       return files;
     }

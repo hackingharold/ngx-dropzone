@@ -1,4 +1,18 @@
-import { Directive, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self } from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Output,
+  Self,
+} from '@angular/core';
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { BooleanInput, coerceBoolean } from '../coercion';
@@ -11,13 +25,11 @@ import { FileInputValue } from './file-input-value';
   exportAs: 'fileInput',
   host: {
     style: 'display: none',
-    '[disabled]': 'disabled',
-    '(change)': '_handleChange($event.target.files)',
     '(focus)': '_focusChanged(true)',
     '(blur)': '_focusChanged(false)',
   },
 })
-export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestroy {
+export class FileInputDirective implements ControlValueAccessor, OnInit, OnChanges, DoCheck, OnDestroy {
   private _value: FileInputValue = null;
   private _parent: FormGroupDirective | NgForm | null = null;
 
@@ -25,8 +37,8 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
   private _touched = false;
   private _errorState = false;
 
-  private _onChange = (_: FileInputValue) => {};
-  private _onTouched = () => {};
+  private _onChange: ((value: FileInputValue) => void) | null = null;
+  private _onTouched: (() => void) | null = null;
 
   /** Emits whenever the parent dropzone should re-render. */
   readonly stateChanges = new Subject<void>();
@@ -47,7 +59,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
       this._value = newValue;
       this._updateErrorState();
 
-      this._onTouched();
+      this._onTouched?.();
       this._touched = true;
 
       this.stateChanges.next();
@@ -94,6 +106,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
 
   /** The disabled state of the file input control. */
   @Input()
+  @HostBinding('disabled')
   get disabled(): boolean {
     return this.ngControl?.disabled || this._parent?.disabled || this.elementRef.nativeElement.disabled;
   }
@@ -150,11 +163,12 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
   }
 
   /** Handles the native (change) event. */
+  @HostListener('change', ['$event.target.files'])
   _handleChange(fileList: FileList) {
     this._fileValue = this.multiple ? Array.from(fileList) : fileList.item(0);
 
     this.selectionChange.emit(this._fileValue);
-    this._onChange(this._fileValue);
+    this._onChange?.(this._fileValue);
 
     // Reset the native element for another selection.
     this.elementRef.nativeElement.value = '';
@@ -165,7 +179,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
     this._fileValue = this.multiple ? files : files[0];
 
     this.selectionChange.emit(this._fileValue);
-    this._onChange(this._fileValue);
+    this._onChange?.(this._fileValue);
   }
 
   /** Sets the selected files value as required by the `ControlValueAccessor` interface. */
@@ -175,12 +189,12 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnDestr
   }
 
   /** Registers the change handler as required by `ControlValueAccessor`. */
-  registerOnChange(fn: any) {
+  registerOnChange(fn: (value: FileInputValue) => void) {
     this._onChange = fn;
   }
 
   /** Registers the touched handler as required by `ControlValueAccessor`. */
-  registerOnTouched(fn: any) {
+  registerOnTouched(fn: () => void) {
     this._onTouched = fn;
   }
 
