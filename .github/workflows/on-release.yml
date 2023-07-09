@@ -44,12 +44,12 @@ jobs:
 
       - name: Publish CDK to npm
         working-directory: dist/cdk
-        run: npm version ${{ github.ref_name }} && npm publish --dry-run
+        run: npm version ${{ github.ref_name }} && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Material to npm
         working-directory: dist/material
-        run: npm version ${{ github.ref_name }} && npm publish --dry-run
+        run: npm version ${{ github.ref_name }} && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
