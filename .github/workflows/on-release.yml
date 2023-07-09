@@ -1,0 +1,50 @@
+name: on-release
+on:
+  release:
+    types: [released]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build CDK
+        run: npm run build:cdk
+
+      - name: Lint CDK
+        run: npm run lint:cdk
+
+      - name: Test CDK
+        run: npm run test:cdk
+
+      - name: Build Material
+        run: npm run build:material
+
+      - name: Lint Material
+        run: npm run lint:material
+
+      - name: Test Material
+        run: npm run test:material
+
+      - name: Publish CDK to npm
+        working-directory: dist/cdk
+        run: npm version ${{ github.ref_name }} && npm publish --dry-run
+
+      - name: Publish Material to npm
+        working-directory: dist/material
+        run: npm version ${{ github.ref_name }} && npm publish --dry-run

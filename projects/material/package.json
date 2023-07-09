@@ -1,12 +1,32 @@
 {
   "name": "@ngx-dropzone/material",
-  "version": "15.0.0",
+  "description": "Dropzone with Material Design implementation.",
+  "license": "MIT",
+  "author": {
+    "name": "hackingharold",
+    "email": "hackingharold@mailbox.org"
+  },
+  "homepage": "https://github.com/hackingharold/ngx-dropzone",
+  "bugs": "https://github.com/hackingharold/ngx-dropzone/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hackingharold/ngx-dropzone.git"
+  },
+  "keywords": [
+    "angular",
+    "ngx",
+    "drag",
+    "drop",
+    "dropzone",
+    "file",
+    "upload",
+    "material"
+  ],
   "peerDependencies": {
     "@angular/common": "~15.2.3",
     "@angular/core": "~15.2.3",
     "@angular/forms": "~15.2.3",
     "@ngx-dropzone/cdk": "^15.0.0",
-    "rxjs": "~6.6.0",
-    "tslib": "^2.3.0"
+    "rxjs": "~6.6.0"
   }
 }

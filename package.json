@@ -4,11 +4,11 @@
   "scripts": {
     "start:cdk": "ng build --watch --project=cdk",
     "build:cdk": "ng build cdk --configuration production",
-    "test:cdk": "ng test cdk --no-watch --no-progress",
+    "test:cdk": "ng test cdk --no-watch --no-progress --browsers=ChromeHeadless",
     "lint:cdk": "ng lint cdk",
     "start:material": "ng build --watch --project=material",
     "build:material": "ng build material --configuration production",
-    "test:material": "ng test material --no-watch --no-progress",
+    "test:material": "ng test material --no-watch --no-progress --browsers=ChromeHeadless",
     "lint:material": "ng lint material"
   },
   "private": true,
