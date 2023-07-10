@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
   template: `<div class="app-container">
     <mat-form-field appearance="outline">
       <ngx-mat-dropzone>
-        <input type="file" fileInput [formControl]="profileImg" accepts="image/jpeg" />
+        <input type="file" fileInput [formControl]="profileImg" accept="image/jpeg" />
       </ngx-mat-dropzone>
       <mat-error>Only image files allowed!</mat-error>
     </mat-form-field>

@@ -92,17 +92,17 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   }
 
   /** Controls the accepted file types. */
-  @Input('accepts')
-  get accepts(): string {
-    return this._accepts;
+  @Input()
+  get accept(): string {
+    return this._accept;
   }
-  set accepts(value: string) {
-    this._accepts = value;
+  set accept(value: string) {
+    this._accept = value;
     this._updateErrorState();
 
     this.stateChanges.next();
   }
-  private _accepts = '*';
+  private _accept = '*';
 
   /** The disabled state of the file input control. */
   @Input()
@@ -228,7 +228,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     const reactiveError = !!(invalid && (touched || this._parent?.submitted));
 
     // Check for any errors directly on the native input element.
-    const nativeError = this._touched && !this._acceptService.accepts(this.value, this._accepts);
+    const nativeError = this._touched && !this._acceptService.accepts(this.value, this._accept);
 
     const errorState = reactiveError || nativeError;
 
