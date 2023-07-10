@@ -1,7 +1,8 @@
 {
   "name": "ngx-dropzone",
-  "version": "0.0.1",
+  "private": true,
   "scripts": {
+    "start:app": "ng serve app",
     "start:cdk": "ng build --watch --project=cdk",
     "build:cdk": "ng build cdk --configuration production",
     "test:cdk": "ng test cdk --no-watch --no-progress --browsers=ChromeHeadless",
@@ -11,7 +12,6 @@
     "test:material": "ng test material --no-watch --no-progress --browsers=ChromeHeadless",
     "lint:material": "ng lint material"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^15.2.3",
     "@angular/cdk": "~15.2.4",
