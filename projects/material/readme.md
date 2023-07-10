@@ -2,4 +2,4 @@
 
 Material Design implementation for an Angular dropzone component.
 
-Based on @ngx-dropzone/cdk, for more info check [here](https://github.com/hackingharold/ngx-dropzone).
+Based on `@ngx-dropzone/cdk`, for more info check [here](https://github.com/hackingharold/ngx-dropzone).
