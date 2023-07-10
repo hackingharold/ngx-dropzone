@@ -2,7 +2,6 @@
 
 This library provides a reusable dropzone component infrastructure and Material
 Design implementation.
-
 Like the Angular Material repo, it uses a monorepo setup for maximum extensibility.
 
 | Package                  | Description                                      |
