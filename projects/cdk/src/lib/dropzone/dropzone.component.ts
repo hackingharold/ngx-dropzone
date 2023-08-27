@@ -6,6 +6,7 @@ import {
   ContentChild,
   HostBinding,
   HostListener,
+  inject,
   Input,
   OnDestroy,
   ViewEncapsulation,
@@ -34,6 +35,7 @@ import { getMissingControlError } from './dropzone-errors';
 })
 export class DropzoneComponent implements AfterContentInit, OnDestroy {
   protected _destroy$ = new Subject<void>();
+  protected _changeDetectorRef = inject(ChangeDetectorRef);
 
   @ContentChild(FileInputDirective, { static: true })
   readonly fileInputDirective: FileInputDirective | null = null;
@@ -69,8 +71,6 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
       this.fileInputDirective._fileValue = newValue;
     }
   }
-
-  constructor(protected _changeDetectorRef: ChangeDetectorRef) {}
 
   ngAfterContentInit() {
     if (!this.fileInputDirective) {

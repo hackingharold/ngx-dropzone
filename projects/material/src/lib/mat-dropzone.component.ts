@@ -1,10 +1,10 @@
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   HostBinding,
+  inject,
   Input,
   ViewEncapsulation,
 } from '@angular/core';
@@ -52,6 +52,8 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 export class MatDropzone extends DropzoneComponent implements MatFormFieldControl<FileInputValue>, AfterContentInit {
   static nextId = 0;
 
+  private _elementRef = inject(ElementRef);
+
   @HostBinding()
   id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
@@ -98,10 +100,6 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   @HostBinding('attr.aria-invalid')
   get ariaInvalid() {
     return this.empty && this.required ? null : this.errorState;
-  }
-
-  constructor(changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef<HTMLElement>) {
-    super(changeDetectorRef);
   }
 
   ngAfterContentInit() {
