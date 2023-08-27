@@ -20,20 +20,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build CDK
-        run: npm run build:cdk
-
       - name: Lint CDK
         run: npm run lint:cdk
+
+      - name: Build CDK
+        run: npm run build:cdk
 
       - name: Test CDK
         run: npm run test:cdk
 
-      - name: Build Material
-        run: npm run build:material
-
       - name: Lint Material
         run: npm run lint:material
+
+      - name: Build Material
+        run: npm run build:material
 
       - name: Test Material
         run: npm run test:material

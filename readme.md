@@ -160,7 +160,7 @@ Run `npm run start:app` for an example app dev server to test changes locally. N
 
 Other available commands are `npm run [build|test|lint]:[cdk|material]`.
 
-## Extensability
+## Extensibility
 
 This library provides a ready-to-use Material Design implementation for the dropzone.
 However, you might want to apply your own custom styling (or library).
