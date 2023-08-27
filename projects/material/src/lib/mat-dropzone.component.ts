@@ -109,7 +109,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     const stateEvents: Observable<unknown>[] = [this.dragover$];
     if (this.fileInputDirective) stateEvents.push(this.fileInputDirective.stateChanges);
 
-    merge(stateEvents)
+    merge(...stateEvents)
       .pipe(
         tap(() => this.stateChanges.next()),
         takeUntil(this._destroy$)
