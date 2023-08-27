@@ -27,6 +27,6 @@
     "@angular/core": "^16.0.0",
     "@angular/forms": "^16.0.0",
     "@ngx-dropzone/cdk": "^16.0.0",
-    "rxjs": "~6.6.0"
+    "rxjs": "^7.4.0"
   }
 }

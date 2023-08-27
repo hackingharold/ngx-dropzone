@@ -11,8 +11,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, Subject, takeUntil, tap } from 'rxjs';
 import { FileInputDirective, FileInputValue } from './../file-input';
 import { getMissingControlError } from './dropzone-errors';
 
@@ -34,7 +33,7 @@ import { getMissingControlError } from './dropzone-errors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropzoneComponent implements AfterContentInit, OnDestroy {
-  protected _destroy$ = new Subject();
+  protected _destroy$ = new Subject<void>();
 
   @ContentChild(FileInputDirective, { static: true })
   readonly fileInputDirective: FileInputDirective | null = null;

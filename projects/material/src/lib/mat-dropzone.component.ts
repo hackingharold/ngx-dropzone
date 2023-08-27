@@ -11,8 +11,7 @@ import {
 import { Validators } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { coerceBoolean, DropzoneComponent, FileInputValue } from 'cdk';
-import { EMPTY, merge, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'ngx-mat-dropzone',
@@ -109,7 +108,10 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     super.ngAfterContentInit();
 
     // Forward the stateChanges from the fileInputDirective to the MatFormFieldControl
-    merge(this.fileInputDirective?.stateChanges ?? EMPTY, this.dragover$)
+    const stateEvents: Observable<unknown>[] = [this.dragover$];
+    if (this.fileInputDirective) stateEvents.push(this.fileInputDirective.stateChanges);
+
+    merge(stateEvents)
       .pipe(
         tap(() => this.stateChanges.next()),
         takeUntil(this._destroy$)
