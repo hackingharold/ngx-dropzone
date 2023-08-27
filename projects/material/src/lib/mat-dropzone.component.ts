@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
-import { coerceBoolean, DropzoneComponent, FileInputValue } from 'cdk';
+import { coerceBoolean, DropzoneComponent, FileInputValue } from '@ngx-dropzone/cdk';
 import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({

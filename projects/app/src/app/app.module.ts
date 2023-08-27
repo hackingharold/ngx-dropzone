@@ -4,8 +4,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DropzoneCdkModule } from 'cdk';
-import { DropzoneMaterialModule } from 'material';
+import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
+import { DropzoneMaterialModule } from '@ngx-dropzone/material';
 import { AppComponent } from './app.component';
 
 @NgModule({

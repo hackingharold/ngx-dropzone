@@ -4,8 +4,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "cdk": ["dist/cdk"],
-      "material": ["dist/material"]
+      "@ngx-dropzone/cdk": ["dist/cdk"],
+      "@ngx-dropzone/material": ["dist/material"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
