@@ -13,7 +13,7 @@
     "lint:material": "ng lint material"
   },
   "dependencies": {
-    "@angular/animations": "^16.1.4",
+    "@angular/animations": "^16.2.3",
     "@angular/cdk": "~16.1.4",
     "@angular/common": "^16.1.4",
     "@angular/compiler": "^16.1.4",
