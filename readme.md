@@ -1,9 +1,7 @@
 # ngx-dropzone
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hackingharold/ngx-dropzone/blob/HEAD/LICENSE)
-
 [![CDK](https://img.shields.io/npm/v/@ngx-dropzone/cdk?color=brightgreen)](https://www.npmjs.org/package/@ngx-dropzone/cdk)
-
 [![Material](https://img.shields.io/npm/v/@ngx-dropzone/material?color=brightgreen)](https://www.npmjs.org/package/@ngx-dropzone/material)
 
 This library provides a reusable dropzone component infrastructure and Material
