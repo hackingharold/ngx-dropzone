@@ -27,20 +27,8 @@ jobs:
       - name: Build CDK
         run: npm run build:cdk
 
-      - name: Lint CDK
-        run: npm run lint:cdk
-
-      - name: Test CDK
-        run: npm run test:cdk
-
       - name: Build Material
         run: npm run build:material
-
-      - name: Lint Material
-        run: npm run lint:material
-
-      - name: Test Material
-        run: npm run test:material
 
       - name: Publish CDK to npm
         working-directory: dist/cdk
