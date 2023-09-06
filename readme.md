@@ -1,5 +1,11 @@
 # ngx-dropzone
 
+[https://img.shields.io/badge/license-MIT-blue.svg](https://github.com/hackingharold/ngx-dropzone/blob/HEAD/LICENSE)
+
+[https://img.shields.io/npm/v/@ngx-dropzone/cdk?color=brightgreen&label=cdk](https://www.npmjs.org/package/@ngx-dropzone/cdk)
+
+[https://img.shields.io/npm/v/@ngx-dropzone/material?color=brightgreen&label=material](https://www.npmjs.org/package/@ngx-dropzone/material)
+
 This library provides a reusable dropzone component infrastructure and Material
 Design implementation.
 Like the Angular Material repo, it uses a monorepo setup for maximum extensibility.
