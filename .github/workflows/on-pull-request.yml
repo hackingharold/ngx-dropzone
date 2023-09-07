@@ -7,7 +7,6 @@ concurrency:
 
 jobs:
   build-lint-test-cdk:
-    name: Build CDK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
