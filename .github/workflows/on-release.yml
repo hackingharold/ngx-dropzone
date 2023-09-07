@@ -8,8 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checkout:
-    name: Checkout and install dependencies
+  build-cdk:
+    name: Build CDK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -23,19 +23,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-  build-cdk:
-    name: Build CDK
-    needs: checkout
-    runs-on: ubuntu-latest
-    steps:
       - name: Build CDK
         run: npm run build:cdk
 
   build-material:
     name: Build Material
-    needs: checkout
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build Material
         run: npm run build:material
 
