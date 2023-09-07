@@ -6,7 +6,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  checkout:
+    name: Checkout and install dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -20,20 +21,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint CDK
-        run: npm run lint:cdk
-
+  build-lint-test-cdk:
+    name: Build CDK
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps:
       - name: Build CDK
         run: npm run build:cdk
+
+      - name: Lint CDK
+        run: npm run lint:cdk
 
       - name: Test CDK
         run: npm run test:cdk
 
-      - name: Lint Material
-        run: npm run lint:material
-
+  build-lint-test-material:
+    name: Build Material
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps:
       - name: Build Material
         run: npm run build:material
+
+      - name: Lint Material
+        run: npm run lint:material
 
       - name: Test Material
         run: npm run test:material

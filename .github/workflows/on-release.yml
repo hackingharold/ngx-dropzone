@@ -8,8 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  release:
-    name: Release
+  checkout:
+    name: Checkout and install dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -19,17 +19,30 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: npm ci
 
+  build-cdk:
+    name: Build CDK
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps:
       - name: Build CDK
         run: npm run build:cdk
 
+  build-material:
+    name: Build Material
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps:
       - name: Build Material
         run: npm run build:material
 
+  publish:
+    needs: [build-cdk, build-material]
+    runs-on: ubuntu-latest
+    steps:
       - name: Publish CDK to npm
         working-directory: dist/cdk
         run: npm version ${{ github.ref_name }} && npm publish
