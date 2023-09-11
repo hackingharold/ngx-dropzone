@@ -157,12 +157,14 @@ Now that we have seen the minimal setup, here are some configuration options for
 
 ## Development server
 
-Run `npm run start:[cdk|material]` to build and watch for changes on the
+Make sure you have [Bun](https://bun.sh/) installed as a drop-in replacement for npm.
+
+Run `bun run start:[cdk|material]` to build and watch for changes on the
 library packages.
 
-Run `npm run start:app` for an example app dev server to test changes locally. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `bun run start:app` for an example app dev server to test changes locally. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-Other available commands are `npm run [build|test|lint]:[cdk|material]`.
+Other available commands are `bun run [build|test|lint]:[cdk|material]`.
 
 ## Extensibility
 
