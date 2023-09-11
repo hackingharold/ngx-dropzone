@@ -226,3 +226,21 @@ export class MyDropzone extends DropzoneComponent {
   }
 }
 ```
+
+## Contributing
+
+### Code of Conduct
+
+Please read our `Code of Conduct` to keep our community open and respectable. 💖
+
+### Want to Help?
+
+Want to report a bug, contribute some code, or improve the documentation? Excellent! Read up on our guidelines for contributing and then check out one of our issues labeled as `help wanted` or `good first issue`.
+
+### Security
+
+If you believe you have found a security vulnerability, we encourage you to responsibly disclose this and not open a public issue. Security issues in this open source project can be safely reported via `hackingharold@mailbox.org`.
+
+### License
+
+This project is MIT-licensed.
