@@ -2,38 +2,25 @@ name: on-pull-request
 on: [pull_request, workflow_dispatch]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-lint-test-cdk:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: ./.github/workflows/setup-reusable.yml
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+      - run: npm run lint:cdk
+      - run: npm run build:cdk
+      - run: npm run test:cdk
 
-      - name: Install dependencies
-        run: npm ci
+  build-lint-test-material:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/setup-reusable.yml
 
-      - name: Lint CDK
-        run: npm run lint:cdk
-
-      - name: Build CDK
-        run: npm run build:cdk
-
-      - name: Test CDK
-        run: npm run test:cdk
-
-      - name: Lint Material
-        run: npm run lint:material
-
-      - name: Build Material
-        run: npm run build:material
-
-      - name: Test Material
-        run: npm run test:material
+      - run: npm run build:cdk
+      - run: npm run lint:material
+      - run: npm run build:material
+      - run: npm run test:material
