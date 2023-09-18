@@ -194,7 +194,7 @@ Use the following skeleton as a starting point. You may always have a look at th
 Material reference implementation linked above.
 
 ```ts
-import { ChangeDetectorRef, Component } from "@angular/core";
+import { Component } from "@angular/core";
 import { DropzoneComponent } from "@ngx-dropzone/cdk";
 
 @Component({
@@ -220,11 +220,7 @@ import { DropzoneComponent } from "@ngx-dropzone/cdk";
     `,
   ],
 })
-export class MyDropzone extends DropzoneComponent {
-  constructor(changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
-  }
-}
+export class MyDropzone extends DropzoneComponent {}
 ```
 
 ## Contributing
