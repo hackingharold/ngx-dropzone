@@ -213,7 +213,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
 
   /** Asserts that the provided value type matches the input element's multiple attribute. */
   private _assertMultipleValue(value: FileInputValue) {
-    if (this.multiple && !Array.isArray(value ?? [])) {
+    if (this.multiple && !Array.isArray(value || [])) {
       throw getNonArrayValueError();
     }
 

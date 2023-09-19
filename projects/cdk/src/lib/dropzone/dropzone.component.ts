@@ -49,7 +49,7 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
 
   @HostBinding('class.disabled')
   get disabled(): boolean {
-    return this.fileInputDirective?.disabled ?? false;
+    return this.fileInputDirective?.disabled || false;
   }
 
   @HostBinding('class.focused')
@@ -59,12 +59,12 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
 
   @HostBinding('attr.aria-invalid')
   get errorState() {
-    return this.fileInputDirective?.errorState ?? false;
+    return this.fileInputDirective?.errorState || false;
   }
 
   @Input()
   get value() {
-    return this.fileInputDirective?.value ?? null;
+    return this.fileInputDirective?.value || null;
   }
   set value(newValue: FileInputValue) {
     if (this.fileInputDirective) {

@@ -62,7 +62,7 @@ export class AcceptService {
   }
 
   private isValidMimeType(type: string): boolean {
-    const safeType = type ?? '';
+    const safeType = type || '';
     const slashPos = safeType.indexOf('/');
 
     if (slashPos <= 0 || slashPos === safeType.length - 1) {
@@ -73,7 +73,7 @@ export class AcceptService {
   }
 
   private isValidExtension(type: string): boolean {
-    const safeType = type ?? '';
+    const safeType = type || '';
     return safeType.length >= 2 && safeType[0] === '.';
   }
 
@@ -83,6 +83,6 @@ export class AcceptService {
   }
 
   private isAscii(char: string): boolean {
-    return (char ?? '').charCodeAt(0) < 127;
+    return (char || '').charCodeAt(0) < 127;
   }
 }
