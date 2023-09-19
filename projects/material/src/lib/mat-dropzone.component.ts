@@ -85,7 +85,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   @HostBinding('attr.aria-required')
   get required(): boolean {
     const controlRequired = this.ngControl?.control?.hasValidator(Validators.required);
-    return this._required ?? controlRequired ?? false;
+    return this._required || controlRequired || false;
   }
   set required(value: boolean) {
     this._required = coerceBoolean(value);
@@ -94,7 +94,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   private _required = false;
 
   get empty() {
-    return this.fileInputDirective?.empty ?? true;
+    return this.fileInputDirective?.empty || true;
   }
 
   @HostBinding('attr.aria-invalid')
