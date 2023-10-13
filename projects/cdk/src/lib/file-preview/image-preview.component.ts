@@ -12,7 +12,7 @@ import { FilePreviewComponent } from './file-preview.component';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileImagePreviewComponent extends FilePreviewComponent implements OnInit {
+export class ImagePreviewComponent extends FilePreviewComponent implements OnInit {
   imageSrc = '';
 
   ngOnInit() {

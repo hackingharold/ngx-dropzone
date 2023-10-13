@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { DropzoneComponent } from './dropzone';
 import { FileInputDirective } from './file-input';
-import { FileImagePreviewComponent, FilePreviewComponent } from './file-preview';
+import { FilePreviewComponent, ImagePreviewComponent } from './file-preview';
 
 @NgModule({
-  declarations: [FileInputDirective, DropzoneComponent, FilePreviewComponent, FileImagePreviewComponent],
-  exports: [FileInputDirective, DropzoneComponent, FilePreviewComponent, FileImagePreviewComponent],
+  declarations: [FileInputDirective, DropzoneComponent, FilePreviewComponent, ImagePreviewComponent],
+  exports: [FileInputDirective, DropzoneComponent, FilePreviewComponent, ImagePreviewComponent],
 })
 export class DropzoneCdkModule {}

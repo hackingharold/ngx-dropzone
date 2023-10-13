@@ -1,2 +1,2 @@
-export * from './file-image-preview.component';
 export * from './file-preview.component';
+export * from './image-preview.component';
