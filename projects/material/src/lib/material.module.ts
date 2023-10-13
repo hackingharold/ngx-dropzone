@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
-import { MatDropzone } from './mat-dropzone.component';
+import { MatDropzone } from './mat-dropzone/mat-dropzone.component';
 
 @NgModule({
   declarations: [MatDropzone],

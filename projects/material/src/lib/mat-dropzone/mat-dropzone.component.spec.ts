@@ -5,8 +5,8 @@ import { MatError, MatFormFieldModule, MatLabel } from '@angular/material/form-f
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DropzoneCdkModule, FileInputDirective, FileInputValidators, FileInputValue } from '@ngx-dropzone/cdk';
+import { DropzoneMaterialModule } from '../material.module';
 import { MatDropzone } from './mat-dropzone.component';
-import { DropzoneMaterialModule } from './material.module';
 
 interface Selectors<T> {
   fixture: ComponentFixture<T>;
