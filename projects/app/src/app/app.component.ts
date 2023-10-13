@@ -6,6 +6,7 @@ import { FormControl } from '@angular/forms';
   template: `<div class="app-container">
     <mat-form-field appearance="outline">
       <ngx-mat-dropzone>
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
         <input type="file" fileInput [formControl]="profileImg" accept="image/jpeg" />
       </ngx-mat-dropzone>
       <mat-error>Only image files allowed!</mat-error>
@@ -26,6 +27,11 @@ import { FormControl } from '@angular/forms';
         flex-direction: column;
         align-items: center;
         margin-top: 25vh;
+      }
+
+      mat-icon {
+        display: block;
+        margin: 0 auto;
       }
     `,
   ],

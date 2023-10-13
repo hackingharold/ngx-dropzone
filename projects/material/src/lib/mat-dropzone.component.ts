@@ -18,6 +18,7 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
   exportAs: 'mat-dropzone',
   template: `
     <div [class]="controlType">
+      <ng-content></ng-content>
       <mat-label>{{ placeholder }}</mat-label>
       <ng-content select="[fileInput]"></ng-content>
     </div>
