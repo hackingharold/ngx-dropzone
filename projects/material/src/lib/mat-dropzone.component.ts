@@ -15,7 +15,7 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'ngx-mat-dropzone',
-  exportAs: 'mat-dropzone',
+  exportAs: 'matDropzone',
   template: `
     <div [class]="controlType">
       <ng-content></ng-content>
