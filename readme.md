@@ -148,6 +148,12 @@ Now that we have seen the minimal setup, here are some configuration options for
 | `multiple` | Allow multiple files to be selected. |
 | `disabled` | Disables any interaction.            |
 
+### cdk dropzone
+
+| Property             | Description                            |
+| -------------------- | -------------------------------------- |
+| `includeDirectories` | Enable extract files from directories. |
+
 ### Material dropzone
 
 | Property      | Description                        |

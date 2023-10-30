@@ -72,6 +72,8 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
     }
   }
 
+  @Input() includeDirectories = false;
+
   ngAfterContentInit() {
     if (!this.fileInputDirective) {
       throw getMissingControlError();
@@ -122,20 +124,87 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   };
 
   @HostListener('drop', ['$event'])
-  _onDrop = (event: DragEvent) => {
+  _onDrop = async (event: DragEvent) => {
     this._onDragLeave(event);
 
-    const files = this._getDroppedFiles(event);
+    const files = await this._getDroppedFiles(event);
     this.fileInputDirective?.handleFileDrop(files);
   };
 
-  private _getDroppedFiles(event: DragEvent): File[] {
-    if (event.dataTransfer?.items) {
-      const files = Array.from(event.dataTransfer.items)
-        .map((file) => file.getAsFile())
-        .filter((file) => file !== null) as File[];
+  private _readDirectoryEntries(reader: FileSystemDirectoryReader) {
+    return new Promise<FileSystemEntry[]>((resolve, reject) => {
+      reader.readEntries(
+        (entries) => resolve(entries),
+        (error) => reject(error)
+      );
+    });
+  }
 
-      return files;
+  private async _breakDirectoryReaderFilesLimit(directoryEntry: FileSystemDirectoryEntry) {
+    const reader = directoryEntry.createReader();
+    let resultEntries: FileSystemEntry[] = [];
+
+    const recurse = async () => {
+      const entries = await this._readDirectoryEntries(reader);
+      if ((entries).length > 0) {
+        resultEntries = resultEntries.concat(entries);
+        await recurse();
+      }
+    };
+
+    await recurse();
+    return resultEntries;
+  }
+
+  private async _getFileSystemFileEntries(fileSystemEntries: (FileSystemEntry | null)[]) {
+    const recurse = async (entries: (FileSystemEntry | null)[]) => {
+      const promises = entries.map(async (entry) => {
+        if (entry?.isFile) {
+          systemEntries.push(entry as FileSystemFileEntry);
+        } else if (entry?.isDirectory) {
+          return recurse(await this._breakDirectoryReaderFilesLimit(entry as FileSystemDirectoryEntry));
+        }
+        return;
+      });
+
+      await Promise.all(promises);
+    };
+
+    const systemEntries: FileSystemFileEntry[] = [];
+    await recurse(fileSystemEntries);
+    return systemEntries;
+  }
+
+  private async _getFileFromFileSystemFileEntry(fileSystemFileEntry: FileSystemFileEntry) {
+    return new Promise<File>((resolve, reject) => {
+      fileSystemFileEntry.file(
+        (file) => resolve(file),
+        (error) => reject(error)
+      );
+    });
+  }
+
+  private async _getFilesWebkitDataTransfer(items: DataTransferItemList) {
+    const systemEntries = await this._getFileSystemFileEntries(Array.from(items).map((item) => item.webkitGetAsEntry()));
+    const files = systemEntries.map(async (entry) => (await this._getFileFromFileSystemFileEntry(entry)));
+    return Promise.all(files);
+  }
+
+  private _getFilesDataTransfer(items: DataTransferItemList) {
+    return Array.from(items)
+      .map((file) => file.getAsFile() as File)
+      .filter((file) => file !== null);
+  }
+
+  private async _getDroppedFiles(event: DragEvent) {
+    const items = event.dataTransfer?.items;
+
+    if (items) {
+      if (this.includeDirectories) {
+        return (await this._getFilesWebkitDataTransfer(items));
+      } else {
+        return this._getFilesDataTransfer(items);
+      }
     }
 
     // Fallback for older specifications
