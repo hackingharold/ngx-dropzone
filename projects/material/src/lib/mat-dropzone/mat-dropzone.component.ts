@@ -1,15 +1,19 @@
 import {
+  AfterContentChecked,
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
+  ContentChildren,
   ElementRef,
   HostBinding,
   inject,
   Input,
+  QueryList,
   ViewEncapsulation,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatChipRow } from '@angular/material/chips';
+import { MatFormField, MatFormFieldControl } from '@angular/material/form-field';
 import { coerceBoolean, DropzoneComponent, FileInputValue } from '@ngx-dropzone/cdk';
 import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
@@ -17,33 +21,33 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
   selector: 'ngx-mat-dropzone',
   exportAs: 'matDropzone',
   template: `
-    <div [class]="controlType">
-      <ng-content select="[fileInput]"></ng-content>
+    <ng-content select="[fileInput]"></ng-content>
+    <div class="mat-chip-grid">
+      <ng-content select="mat-chip-row"></ng-content>
     </div>
   `,
   styles: [
     `
       ngx-mat-dropzone {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        display: flex;
+        position: relative;
+        z-index: 10;
+        min-height: 56px;
         margin: 0 -16px;
-        z-index: 100;
-
         color: currentcolor;
         outline: none;
         cursor: pointer;
         font: inherit;
       }
 
-      .ngx-mat-dropzone * {
-        pointer-events: none;
-      }
+      .mat-chip-grid {
+        display: flex;
+        flex-flow: wrap;
+        margin: 8px 16px;
 
-      .dragover > .ngx-mat-dropzone.fill {
-        background-color: #00000016;
+        & > .mdc-evolution-chip {
+          margin: 4px 0 4px 8px;
+        }
       }
     `,
   ],
@@ -56,18 +60,22 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
     },
   ],
 })
-export class MatDropzone extends DropzoneComponent implements MatFormFieldControl<FileInputValue>, AfterContentInit {
+export class MatDropzone
+  extends DropzoneComponent
+  implements MatFormFieldControl<FileInputValue>, AfterContentInit, AfterContentChecked
+{
   static nextId = 0;
 
   private _elementRef = inject(ElementRef);
+  private _formField = inject(MatFormField);
 
   @HostBinding()
   id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
   controlType = 'ngx-mat-dropzone';
 
-  // Always center the label
-  shouldLabelFloat = false;
+  @ContentChildren(MatChipRow)
+  readonly _matChips!: QueryList<MatChipRow>;
 
   // The file input is never autofilled
   autofilled = false;
@@ -104,6 +112,10 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     return this.fileInputDirective?.empty || true;
   }
 
+  get shouldLabelFloat() {
+    return this._matChips.length > 0;
+  }
+
   @HostBinding('attr.aria-invalid')
   get ariaInvalid() {
     return this.empty && this.required ? null : this.errorState;
@@ -124,11 +136,22 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
       .subscribe();
   }
 
-  onContainerClick(): void {
+  ngAfterContentChecked() {
+    // Set the dropzone to cover the whole form field
+    const formField = this._formField?._elementRef?.nativeElement as HTMLElement;
+    this._elementRef.nativeElement.style.width = `${formField?.offsetWidth ?? 0}px`;
+
+    // Set the dropzone height depending on the form field appearance
+    const filled = this._formField?.appearance === 'fill';
+    this._elementRef.nativeElement.style.marginTop = `-${filled ? 24 : 16}px`;
+    this._elementRef.nativeElement.style.marginBottom = `-${filled ? 8 : 16}px`;
+  }
+
+  onContainerClick() {
     this.openFilePicker();
   }
 
-  setDescribedByIds(ids: string[]): void {
+  setDescribedByIds(ids: string[]) {
     if (ids.length) {
       this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
     } else {
