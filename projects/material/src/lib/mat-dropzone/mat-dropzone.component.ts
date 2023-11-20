@@ -18,18 +18,24 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
   exportAs: 'matDropzone',
   template: `
     <div [class]="controlType">
-      <ng-content></ng-content>
-      <mat-label>{{ placeholder }}</mat-label>
       <ng-content select="[fileInput]"></ng-content>
     </div>
   `,
   styles: [
     `
-      .ngx-mat-dropzone {
+      ngx-mat-dropzone {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0 -16px;
+        z-index: 100;
+
+        color: currentcolor;
+        outline: none;
         cursor: pointer;
-        text-align: center;
-        padding: 28px 20px;
-        margin: -16px;
+        font: inherit;
       }
 
       .ngx-mat-dropzone * {
@@ -80,7 +86,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     this._placeholder = value;
     this.stateChanges.next();
   }
-  private _placeholder = 'Drop it!';
+  private _placeholder = '';
 
   @Input()
   @HostBinding('attr.aria-required')
