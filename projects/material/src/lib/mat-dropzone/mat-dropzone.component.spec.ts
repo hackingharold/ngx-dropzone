@@ -1,7 +1,9 @@
 import { Component, DebugElement, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatChipRemove, MatChipRow, MatChipsModule } from '@angular/material/chips';
 import { MatError, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DropzoneCdkModule, FileInputDirective, FileInputValidators, FileInputValue } from '@ngx-dropzone/cdk';
@@ -24,9 +26,11 @@ describe('MatDropzone', () => {
   function configureDropzoneTestingModule<T>(testComponent: Type<T>): Selectors<T> {
     const fixture = TestBed.configureTestingModule({
       imports: [
+        BrowserAnimationsModule,
         ReactiveFormsModule,
         MatFormFieldModule,
-        BrowserAnimationsModule,
+        MatIconModule,
+        MatChipsModule,
         DropzoneCdkModule,
         DropzoneMaterialModule,
       ],
@@ -63,7 +67,7 @@ describe('MatDropzone', () => {
     });
 
     it('should render placeholder text', () => {
-      const label = selectors.element.query(By.directive(MatLabel)).nativeElement.textContent;
+      const label = selectors.fixture.debugElement.query(By.directive(MatLabel)).nativeElement.textContent;
       expect(label).toBe('Drop it basic!');
     });
 
@@ -90,6 +94,22 @@ describe('MatDropzone', () => {
       selectors = configureDropzoneTestingModule(DropzoneWithFormControl);
     }));
 
+    it('should render chip', () => {
+      const validFile = new File(['...'], `my-file.png`);
+      selectors.fileInput.ngControl.control?.setValue(validFile);
+      selectors.fileInput.ngControl.control?.markAsDirty(); // simulate user UI action
+      selectors.fixture.detectChanges();
+
+      const matChip = selectors.fixture.debugElement.query(By.directive(MatChipRow));
+      expect(matChip).toBeTruthy();
+
+      matChip.query(By.directive(MatChipRemove)).nativeElement.click();
+      selectors.fixture.detectChanges();
+
+      const noChip = selectors.fixture.debugElement.query(By.directive(MatChipRow));
+      expect(noChip).toBeFalsy();
+    });
+
     it('should render error state', () => {
       const invalidFile = new File(['...'], `${Date.now()}.pdf`);
       selectors.fileInput.ngControl.control?.setValue(invalidFile);
@@ -109,7 +129,8 @@ describe('MatDropzone', () => {
   selector: 'basic-dropzone',
   template: `
     <mat-form-field>
-      <ngx-mat-dropzone placeholder="Drop it basic!" required>
+      <mat-label>Drop it basic!</mat-label>
+      <ngx-mat-dropzone required>
         <input type="file" fileInput />
       </ngx-mat-dropzone>
     </mat-form-field>
@@ -123,6 +144,12 @@ class DropzoneBasic {}
     <mat-form-field>
       <ngx-mat-dropzone>
         <input type="file" fileInput [formControl]="control" />
+        <mat-chip-row *ngIf="control.value" (removed)="clear()">
+          {{ control.value.name }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
       </ngx-mat-dropzone>
       <mat-error>Invalid file type!</mat-error>
     </mat-form-field>
@@ -131,4 +158,8 @@ class DropzoneBasic {}
 class DropzoneWithFormControl {
   validators = [FileInputValidators.accept('image/*')];
   control = new FormControl<FileInputValue>(null, this.validators);
+
+  clear() {
+    this.control.setValue(null);
+  }
 }
