@@ -22,7 +22,7 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
   exportAs: 'matDropzone',
   template: `
     <ng-content select="[fileInput]"></ng-content>
-    <div class="mat-chip-grid">
+    <div class="mat-chip-grid" [class.filled-and-float]="filled && shouldLabelFloat">
       <ng-content select="mat-chip-row"></ng-content>
     </div>
   `,
@@ -43,7 +43,11 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
       .mat-chip-grid {
         display: flex;
         flex-flow: wrap;
-        margin: 8px 16px;
+        margin: 8px;
+
+        &.filled-and-float {
+          padding-top: 16px;
+        }
 
         & > .mdc-evolution-chip {
           margin: 4px 0 4px 8px;
@@ -108,6 +112,10 @@ export class MatDropzone
   }
   private _required = false;
 
+  get filled() {
+    return this._formField?.appearance === 'fill';
+  }
+
   get empty() {
     return this.fileInputDirective?.empty || true;
   }
@@ -142,9 +150,8 @@ export class MatDropzone
     this._elementRef.nativeElement.style.width = `${formField?.offsetWidth ?? 0}px`;
 
     // Set the dropzone height depending on the form field appearance
-    const filled = this._formField?.appearance === 'fill';
-    this._elementRef.nativeElement.style.marginTop = `-${filled ? 24 : 16}px`;
-    this._elementRef.nativeElement.style.marginBottom = `-${filled ? 8 : 16}px`;
+    this._elementRef.nativeElement.style.marginTop = `-${this.filled ? 24 : 16}px`;
+    this._elementRef.nativeElement.style.marginBottom = `-${this.filled ? 8 : 16}px`;
   }
 
   onContainerClick() {
