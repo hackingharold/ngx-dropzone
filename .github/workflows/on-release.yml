@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
       - uses: oven-sh/setup-bun@v1
       - run: bun install
 
@@ -21,11 +24,7 @@ jobs:
       - name: Publish CDK to npm
         working-directory: dist/cdk
         run: npm version ${{ github.ref_name }} && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Material to npm
         working-directory: dist/material
         run: npm version ${{ github.ref_name }} && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
