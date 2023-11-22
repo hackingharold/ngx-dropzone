@@ -15,6 +15,7 @@ import { NgControl } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil, tap } from 'rxjs';
 import { FileInputDirective, FileInputValue } from './../file-input';
 import { getMissingControlError } from './dropzone-errors';
+import { DropzoneService } from './dropzone.service';
 
 @Component({
   selector: 'ngx-dropzone',
@@ -36,6 +37,7 @@ import { getMissingControlError } from './dropzone-errors';
 export class DropzoneComponent implements AfterContentInit, OnDestroy {
   protected _destroy$ = new Subject<void>();
   protected _changeDetectorRef = inject(ChangeDetectorRef);
+  protected _dropzoneService = inject(DropzoneService);
 
   @ContentChild(FileInputDirective, { static: true })
   readonly fileInputDirective: FileInputDirective | null = null;
@@ -122,23 +124,10 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   };
 
   @HostListener('drop', ['$event'])
-  _onDrop = (event: DragEvent) => {
+  _onDrop = async (event: DragEvent) => {
     this._onDragLeave(event);
 
-    const files = this._getDroppedFiles(event);
+    const files = await this._dropzoneService.getFiles(event);
     this.fileInputDirective?.handleFileDrop(files);
   };
-
-  private _getDroppedFiles(event: DragEvent): File[] {
-    if (event.dataTransfer?.items) {
-      const files = Array.from(event.dataTransfer.items)
-        .map((file) => file.getAsFile())
-        .filter((file) => file !== null) as File[];
-
-      return files;
-    }
-
-    // Fallback for older specifications
-    return Array.from(event.dataTransfer?.files ?? []);
-  }
 }

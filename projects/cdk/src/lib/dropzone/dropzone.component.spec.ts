@@ -105,14 +105,16 @@ describe('DropzoneComponent', () => {
       expect(selectors.element.nativeElement.classList).toContain('disabled');
     });
 
-    it('should update form control value after file drop', () => {
+    it('should update form control value after file drop', async () => {
       const dataTransfer = new DataTransfer();
       const getFile = () => new File(['...'], `${Date.now()}.txt`);
       [getFile(), getFile(), getFile()].forEach((f) => dataTransfer.items.add(f));
 
       const drop = new DragEvent('drop', { dataTransfer });
 
-      selectors.element.nativeElement.dispatchEvent(drop);
+      // We directly call the internal method `_onDrop` instead of
+      // dispatching the event because we have to await it to complete.
+      await selectors.component._onDrop(drop);
       selectors.fixture.detectChanges();
 
       expect(selectors.element.nativeElement.classList).not.toContain('dragover');
