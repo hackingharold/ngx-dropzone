@@ -1,5 +1,6 @@
 {
   "name": "ngx-dropzone",
+  "version": "",
   "private": true,
   "scripts": {
     "start:app": "ng serve app",
