@@ -76,6 +76,14 @@ Now you can use it in your markup.
 </mat-form-field>
 ```
 
+⚠️ Please note that no file preview will be provided by this lib,
+because people are way too opinionated about their styling and behaviour.
+If you're using the Angular components anyway, you could use something
+like the [Chips](https://material.angular.io/components/chips/overview).
+
+The dropzone supports dropping folders by default.
+All files from subdirectories will be provided as a flat `File[]`.
+
 ## Usage with FormControl and validation
 
 The `fileInput` directive on the `<input type="file" />` element makes it a valid target
