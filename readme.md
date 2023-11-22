@@ -68,16 +68,13 @@ Now you can use it in your markup.
 
 ```html
 <mat-form-field appearance="fill">
+  <mat-label>Drop anything!</mat-label>
   <ngx-mat-dropzone>
     <input type="file" fileInput />
   </ngx-mat-dropzone>
+  <mat-icon matSuffix color="primary">cloud_upload</mat-icon>
 </mat-form-field>
 ```
-
-⚠️ Please note that no file preview will be provided by this lib,
-because people are way too opinionated about their styling and behaviour.
-If you're using the Angular components anyway, you could use something
-like the [Chips](https://material.angular.io/components/chips/overview).
 
 ## Usage with FormControl and validation
 
@@ -136,6 +133,40 @@ The `FileInputValidators` provides custom validator functions for files.
 | `FileInputValidators.minSize` | Sets the required minimum file size in bytes. |
 | `FileInputValidators.maxSize` | Sets the maximum allowed file size in bytes.  |
 
+## File Previews
+
+In case you want to give a consistent user feedback about the selected
+files, we recommend to use the [Material Chips](https://material.angular.io/components/chips/overview).
+
+⚠️ Please note that no other file preview will be provided by this lib,
+because people are way too opinionated about their styling and behaviour.
+
+```html
+<mat-form-field appearance="fill">
+  <mat-label>Drop anything!</mat-label>
+  <ngx-mat-dropzone>
+    <input type="file" fileInput [formControl]="fileCtrl" />
+    <mat-chip-row *ngIf="fileCtrl.value" (removed)="clear()">
+      {{ fileCtrl.value.name }}
+      <button matChipRemove>
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-row>
+  </ngx-mat-dropzone>
+  <mat-icon matSuffix color="primary">cloud_upload</mat-icon>
+</mat-form-field>
+```
+
+```js
+export class AppComponent {
+  fileCtrl = new FormControl();
+
+  clear() {
+    this.fileCtrl.setValue(null);
+  }
+}
+```
+
 ## Configuration
 
 Now that we have seen the minimal setup, here are some configuration options for the component markup.
@@ -150,10 +181,10 @@ Now that we have seen the minimal setup, here are some configuration options for
 
 ### Material dropzone
 
-| Property      | Description                        |
-| ------------- | ---------------------------------- |
-| `placeholder` | Placeholder label text.            |
-| `required`    | Sets the native required property. |
+| Property      | Description                                                      |
+| ------------- | ---------------------------------------------------------------- |
+| `required`    | Sets the native required property.                               |
+| `placeholder` | The placeholder text has no effect, use `<mat-label />` instead. |
 
 ## Development server
 

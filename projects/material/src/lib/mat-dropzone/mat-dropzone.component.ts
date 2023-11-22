@@ -1,42 +1,57 @@
 import {
+  AfterContentChecked,
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
+  ContentChildren,
   ElementRef,
   HostBinding,
   inject,
   Input,
+  QueryList,
   ViewEncapsulation,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatChipRow } from '@angular/material/chips';
+import { MatFormField, MatFormFieldControl } from '@angular/material/form-field';
 import { coerceBoolean, DropzoneComponent, FileInputValue } from '@ngx-dropzone/cdk';
 import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'ngx-mat-dropzone',
-  exportAs: 'mat-dropzone',
+  exportAs: 'matDropzone',
   template: `
-    <div [class]="controlType">
-      <mat-label>{{ placeholder }}</mat-label>
-      <ng-content select="[fileInput]"></ng-content>
+    <ng-content select="[fileInput]"></ng-content>
+    <div class="mat-chip-grid" [class.filled-and-float]="filled && shouldLabelFloat">
+      <ng-content select="mat-chip-row"></ng-content>
     </div>
   `,
   styles: [
     `
-      .ngx-mat-dropzone {
+      ngx-mat-dropzone {
+        display: flex;
+        position: relative;
+        z-index: 10;
+        min-height: 56px;
+        margin: 0 -16px;
+        color: currentcolor;
+        outline: none;
         cursor: pointer;
-        text-align: center;
-        padding: 28px 20px;
-        margin: -16px;
+        font: inherit;
       }
 
-      .ngx-mat-dropzone * {
-        pointer-events: none;
-      }
+      .mat-chip-grid {
+        display: flex;
+        flex-flow: wrap;
+        margin: 8px;
 
-      .dragover > .ngx-mat-dropzone.fill {
-        background-color: #00000016;
+        &.filled-and-float {
+          padding-top: 16px;
+        }
+
+        & > .mdc-evolution-chip {
+          margin: 4px 0 4px 8px;
+        }
       }
     `,
   ],
@@ -49,18 +64,22 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
     },
   ],
 })
-export class MatDropzone extends DropzoneComponent implements MatFormFieldControl<FileInputValue>, AfterContentInit {
+export class MatDropzone
+  extends DropzoneComponent
+  implements MatFormFieldControl<FileInputValue>, AfterContentInit, AfterContentChecked
+{
   static nextId = 0;
 
   private _elementRef = inject(ElementRef);
+  private _formField = inject(MatFormField);
 
   @HostBinding()
   id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
   controlType = 'ngx-mat-dropzone';
 
-  // Always center the label
-  shouldLabelFloat = false;
+  @ContentChildren(MatChipRow)
+  readonly _matChips!: QueryList<MatChipRow>;
 
   // The file input is never autofilled
   autofilled = false;
@@ -79,7 +98,7 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
     this._placeholder = value;
     this.stateChanges.next();
   }
-  private _placeholder = 'Drop it!';
+  private _placeholder = '';
 
   @Input()
   @HostBinding('attr.aria-required')
@@ -93,8 +112,16 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
   }
   private _required = false;
 
+  get filled() {
+    return this._formField?.appearance === 'fill';
+  }
+
   get empty() {
     return this.fileInputDirective?.empty || true;
+  }
+
+  get shouldLabelFloat() {
+    return this._matChips.length > 0;
   }
 
   @HostBinding('attr.aria-invalid')
@@ -117,11 +144,21 @@ export class MatDropzone extends DropzoneComponent implements MatFormFieldContro
       .subscribe();
   }
 
-  onContainerClick(): void {
+  ngAfterContentChecked() {
+    // Set the dropzone to cover the whole form field
+    const formField = this._formField?._elementRef?.nativeElement as HTMLElement;
+    this._elementRef.nativeElement.style.width = `${formField?.offsetWidth ?? 0}px`;
+
+    // Set the dropzone height depending on the form field appearance
+    this._elementRef.nativeElement.style.marginTop = `-${this.filled ? 24 : 16}px`;
+    this._elementRef.nativeElement.style.marginBottom = `-${this.filled ? 8 : 16}px`;
+  }
+
+  onContainerClick() {
     this.openFilePicker();
   }
 
-  setDescribedByIds(ids: string[]): void {
+  setDescribedByIds(ids: string[]) {
     if (ids.length) {
       this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
     } else {
