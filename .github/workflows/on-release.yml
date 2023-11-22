@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-          scope: "@ngx-dropzone"
           always-auth: true
           token: ${{ secrets.NPM_TOKEN }}
       - uses: oven-sh/setup-bun@v1
