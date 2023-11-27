@@ -9,12 +9,14 @@ import { FormControl } from '@angular/forms';
       <ngx-mat-dropzone>
         <input type="file" fileInput multiple [formControl]="profileImg" accept="image/png" />
 
-        <mat-chip-row *ngFor="let image of images" (removed)="remove(image)">
+        @for (image of images; track image.name) {
+        <mat-chip-row (removed)="remove(image)">
           {{ image.name }}
           <button matChipRemove>
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip-row>
+        }
       </ngx-mat-dropzone>
       <mat-icon matSuffix>cloud_upload</mat-icon>
       <mat-error>Only image files allowed!</mat-error>

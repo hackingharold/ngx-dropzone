@@ -144,12 +144,14 @@ class DropzoneBasic {}
     <mat-form-field>
       <ngx-mat-dropzone>
         <input type="file" fileInput [formControl]="control" />
-        <mat-chip-row *ngIf="control.value" (removed)="clear()">
+        @if (control.value) {
+        <mat-chip-row (removed)="clear()">
           {{ control.value.name }}
           <button matChipRemove>
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip-row>
+        }
       </ngx-mat-dropzone>
       <mat-error>Invalid file type!</mat-error>
     </mat-form-field>

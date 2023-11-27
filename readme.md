@@ -149,12 +149,14 @@ because people are way too opinionated about their styling and behaviour.
   <mat-label>Drop anything!</mat-label>
   <ngx-mat-dropzone>
     <input type="file" fileInput [formControl]="fileCtrl" />
-    <mat-chip-row *ngIf="fileCtrl.value" (removed)="clear()">
+    @if (fileCtrl.value) {
+    <mat-chip-row (removed)="clear()">
       {{ fileCtrl.value.name }}
       <button matChipRemove>
         <mat-icon>cancel</mat-icon>
       </button>
     </mat-chip-row>
+    }
   </ngx-mat-dropzone>
   <mat-icon matSuffix color="primary">cloud_upload</mat-icon>
 </mat-form-field>
