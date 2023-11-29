@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { nonNullable } from '../coercion';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class DropzoneService {
 
     const fsEntries = Array.from(event.dataTransfer?.items ?? [])
       .map((item) => this._toFileSystemEntry(item))
-      .filter((e): e is FileSystemEntry | File => e !== null)
+      .filter(nonNullable)
       .map((entry) => this._getFilesFromEntry(entry));
 
     const files: File[][] = await Promise.all(fsEntries);

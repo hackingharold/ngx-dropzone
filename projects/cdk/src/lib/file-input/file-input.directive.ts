@@ -15,10 +15,10 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { BooleanInput, coerceBoolean } from '../coercion';
+import { BooleanInput, coerceBoolean, nonNullable } from '../coercion';
 import { AcceptService } from './accept.service';
 import { getArrayValueError, getInputTypeError, getNonArrayValueError } from './file-input-errors';
-import { FileInputValue } from './file-input-value';
+import { FileInputMode, FileInputValue } from './file-input-value';
 
 @Directive({
   selector: 'input[fileInput]',
@@ -56,7 +56,8 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
      */
     if (newValue !== this._value || Array.isArray(newValue)) {
       this._assertMultipleValue(newValue);
-      this._value = newValue;
+
+      this._value = this._appendOrReplace(newValue);
       this._updateErrorState();
 
       this._onTouched?.();
@@ -103,6 +104,17 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     this.stateChanges.next();
   }
   private _accept = '*';
+
+  /** Controls the value setting strategy. */
+  @Input()
+  get mode(): FileInputMode {
+    return this._mode;
+  }
+  set mode(value: FileInputMode) {
+    this._mode = value;
+    this.stateChanges.next();
+  }
+  private _mode: FileInputMode = 'replace';
 
   /** The disabled state of the file input control. */
   @Input()
@@ -165,6 +177,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   /** Handles the native (change) event. */
   @HostListener('change', ['$event.target.files'])
   _handleChange(fileList: FileList) {
+    if (this.disabled) return;
     this._fileValue = this.multiple ? Array.from(fileList) : fileList.item(0);
 
     this.selectionChange.emit(this._fileValue);
@@ -176,6 +189,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
 
   /** Handles the drop of a file array. */
   handleFileDrop(files: File[]) {
+    if (this.disabled) return;
     this._fileValue = this.multiple ? files : files[0];
 
     this.selectionChange.emit(this._fileValue);
@@ -220,6 +234,19 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     if (!this.multiple && Array.isArray(value)) {
       throw getArrayValueError();
     }
+  }
+
+  private _appendOrReplace(value: FileInputValue): FileInputValue {
+    if (this._canAppend(this._value)) {
+      const valueArray = Array.isArray(value) ? value : [value];
+      return [...this._value, ...valueArray.filter(nonNullable)];
+    }
+
+    return value;
+  }
+
+  private _canAppend(value: FileInputValue): value is File[] {
+    return this._mode === 'append' && this.multiple && Array.isArray(value);
   }
 
   private _updateErrorState() {

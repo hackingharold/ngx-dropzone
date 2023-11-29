@@ -7,7 +7,7 @@ import { FormControl } from '@angular/forms';
     <mat-form-field appearance="outline">
       <mat-label>Drop only .png files!</mat-label>
       <ngx-mat-dropzone>
-        <input type="file" fileInput multiple [formControl]="profileImg" accept="image/png" />
+        <input type="file" fileInput mode="replace" multiple [formControl]="profileImg" accept="image/png" />
 
         @for (image of images; track image.name) {
         <mat-chip-row (removed)="remove(image)">

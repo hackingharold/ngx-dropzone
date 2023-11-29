@@ -1,4 +1,4 @@
-import { coerceBoolean } from './boolean-coercion';
+import { coerceBoolean, nonNullable } from './boolean-coercion';
 
 describe('coerceBoolean', () => {
   it('should coerce undefined to false', () => {
@@ -39,5 +39,16 @@ describe('coerceBoolean', () => {
 
   it('should coerce an arbitrary string to false', () => {
     expect(coerceBoolean('random')).toBe(false);
+  });
+
+  it('filters out null values from number array', () => {
+    expect([1, null, 2, null, 3].filter(nonNullable)).toEqual([1, 2, 3]);
+  });
+
+  it('filters out null values from object array', () => {
+    expect([{ name: 'John' }, null, { name: 'Jane' }].filter(nonNullable)).toEqual([
+      { name: 'John' },
+      { name: 'Jane' },
+    ]);
   });
 });
