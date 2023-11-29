@@ -1,10 +1,16 @@
-import { Component, DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, Type } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
 import { FileInputValue } from './file-input-value';
 import { FileInputDirective } from './file-input.directive';
+
+interface Selectors<T> {
+  fixture: ComponentFixture<T>;
+  inputElement: DebugElement;
+  fileInput: FileInputDirective;
+}
 
 /** Returns a simple fake file. */
 const getFile = () => new File(['...'], `${Date.now()}.txt`);
@@ -16,162 +22,278 @@ const getFileList = (files: File[]): FileList => {
 };
 
 describe('FileInputDirective', () => {
-  let fixture: ComponentFixture<TestComponent>;
-  let elements: DebugElement[];
-
-  const getElement = (index: number) => elements[index].injector.get(FileInputDirective);
-
-  beforeEach(() => {
-    fixture = TestBed.configureTestingModule({
+  function configureFileInputTestingModule<T>(testComponent: Type<T>): Selectors<T> {
+    const fixture = TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule],
-      declarations: [FileInputDirective, TestComponent],
-    }).createComponent(TestComponent);
+      declarations: [FileInputDirective, testComponent],
+    }).createComponent(testComponent);
+
+    const inputElement = fixture.debugElement.query(By.directive(FileInputDirective));
+    const fileInput = inputElement.injector.get(FileInputDirective);
 
     fixture.detectChanges();
-    elements = fixture.debugElement.queryAll(By.directive(FileInputDirective));
-  });
 
-  it('should create test elements', () => {
-    expect(elements.length).toBe(3);
-  });
+    return { fixture, inputElement, fileInput };
+  }
 
-  it('should return multiple property correctly', () => {
-    [0, 1].forEach((i) => {
-      const element = getElement(i);
-      expect(element.multiple).toBe(!!i);
+  describe('basic', () => {
+    let selectors: Selectors<FileInputBasic>;
+
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputBasic);
+    }));
+
+    it('should create file input element with directive', () => {
+      expect(selectors.inputElement).toBeTruthy();
+      expect(selectors.fileInput).toBeTruthy();
+    });
+
+    it('should return multiple=false by default', () => {
+      expect(selectors.fileInput.multiple).toBeFalse();
+    });
+
+    it('should throw when not multiple array', () => {
+      expect(() => {
+        selectors.fileInput._fileValue = [getFile(), getFile()];
+      }).toThrowError(getArrayValueError().message);
+    });
+
+    it('should handle selection using native change event', () => {
+      const element = selectors.fileInput;
+      const file = getFile();
+
+      spyOn(element.selectionChange, 'emit');
+      element._handleChange(getFileList([file]));
+
+      expect(element.value).toEqual(file);
+      expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
+    });
+
+    it('should handle file drop', () => {
+      const element = selectors.fileInput;
+      const file = getFile();
+
+      spyOn(element.selectionChange, 'emit');
+      element.handleFileDrop([file]);
+
+      expect(element.value).toEqual(file);
+      expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
+    });
+
+    it('should return the focused state correctly', () => {
+      const element = selectors.fileInput;
+      const input = selectors.inputElement.nativeElement as HTMLInputElement;
+      expect(element.focused).toBeFalse();
+
+      input.dispatchEvent(new Event('focus'));
+      expect(element.focused).toBeTrue();
+
+      input.dispatchEvent(new Event('blur'));
+      expect(element.focused).toBeFalse();
+    });
+
+    it('should lose focus when disabled', () => {
+      const element = selectors.fileInput;
+      const input = selectors.inputElement.nativeElement as HTMLInputElement;
+      expect(element.focused).toBeFalse();
+
+      input.dispatchEvent(new Event('focus'));
+      expect(element.focused).toBeTrue();
+
+      element.disabled = true;
+      expect(element.focused).toBeFalse();
     });
   });
 
-  it('should update value and fire selectionChange', () => {
-    const element = getElement(1);
-    const testFiles = [getFile(), getFile()];
+  describe('multiple', () => {
+    let selectors: Selectors<FileInputMultiple>;
 
-    spyOn(element.selectionChange, 'emit');
-    element.writeValue(testFiles);
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputMultiple);
+    }));
 
-    expect(element.value).toEqual(testFiles);
-    expect(element.selectionChange.emit).toHaveBeenCalledWith(testFiles);
-  });
+    it('should return multiple=true if set', () => {
+      expect(selectors.fileInput.multiple).toBeTrue();
+    });
 
-  it('should throw when not multiple array', () => {
-    const element = getElement(0);
-    expect(() => {
+    it('should update value and fire selectionChange', () => {
+      const element = selectors.fileInput;
+      const testFiles = [getFile(), getFile()];
+
+      spyOn(element.selectionChange, 'emit');
+      element.writeValue(testFiles);
+
+      expect(element.value).toEqual(testFiles);
+      expect(element.selectionChange.emit).toHaveBeenCalledWith(testFiles);
+    });
+
+    it('should throw when multiple non-array', () => {
+      const element = selectors.fileInput;
+      expect(() => {
+        element._fileValue = getFile();
+      }).toThrowError(getNonArrayValueError().message);
+    });
+
+    it('should return the empty state correctly', () => {
+      const element = selectors.fileInput;
+      expect(element.empty).toBeTrue();
+
       element._fileValue = [getFile(), getFile()];
-    }).toThrowError(getArrayValueError().message);
+      expect(element.empty).toBeFalse();
+    });
+
+    it('should handle multiple selection using native change event', () => {
+      const element = selectors.fileInput;
+      const files = [getFile(), getFile()];
+
+      spyOn(element.selectionChange, 'emit');
+      element._handleChange(getFileList(files));
+
+      expect(element.value).toEqual(files);
+      expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
+    });
+
+    it('should handle file drop with multiple', () => {
+      const element = selectors.fileInput;
+      const files = [getFile(), getFile()];
+
+      spyOn(element.selectionChange, 'emit');
+      element.handleFileDrop(files);
+
+      expect(element.value).toEqual(files);
+      expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
+    });
+
+    it('should replace value by default', () => {
+      const element = selectors.fileInput;
+      const files1 = [getFile(), getFile()];
+      const files2 = [getFile(), getFile()];
+
+      element.handleFileDrop(files1);
+      expect(element.value).toEqual(files1);
+
+      element.handleFileDrop(files2);
+      expect(element.value).toEqual(files2);
+    });
   });
 
-  it('should throw when multiple non-array', () => {
-    const element = getElement(1);
-    expect(() => {
-      element._fileValue = getFile();
-    }).toThrowError(getNonArrayValueError().message);
+  describe('mode=append', () => {
+    let selectors: Selectors<FileInputAppend>;
+
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputAppend);
+    }));
+
+    it('should always replace value when not multiple', () => {
+      const element = selectors.fileInput;
+      const file = getFile();
+      const file2 = getFile();
+
+      element.handleFileDrop([file]);
+      expect(element.value).toEqual(file);
+
+      element.handleFileDrop([file2]);
+      expect(element.value).toEqual(file2);
+    });
   });
 
-  it('should handle selection using native change event', () => {
-    const element = getElement(0);
-    const file = getFile();
+  describe('multiple and mode=append', () => {
+    let selectors: Selectors<FileInputMultipleAppend>;
 
-    spyOn(element.selectionChange, 'emit');
-    element._handleChange(getFileList([file]));
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputMultipleAppend);
+    }));
 
-    expect(element.value).toEqual(file);
-    expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
+    it('should append value when mode is append', () => {
+      const element = selectors.fileInput;
+      const files1 = [getFile(), getFile()];
+      const files2 = [getFile(), getFile()];
+
+      element.handleFileDrop(files1);
+      expect(element.value).toEqual(files1);
+
+      element.handleFileDrop(files2);
+      expect(element.value).toEqual([...files1, ...files2]);
+    });
   });
 
-  it('should handle multiple selection using native change event', () => {
-    const element = getElement(1);
-    const files = [getFile(), getFile()];
+  describe('form control', () => {
+    let selectors: Selectors<FileInputWithFormControl>;
 
-    spyOn(element.selectionChange, 'emit');
-    element._handleChange(getFileList(files));
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputWithFormControl);
+    }));
 
-    expect(element.value).toEqual(files);
-    expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
+    it('should return the error state correctly', () => {
+      const element = selectors.fileInput;
+      const formControl = selectors.inputElement.componentInstance.fileCtrl as FormControl<FileInputValue>;
+      expect(formControl.touched).toBeFalse();
+      expect(element.errorState).toBeFalse();
+
+      formControl.markAsTouched();
+      selectors.fixture.detectChanges();
+      expect(formControl.touched).toBeTrue();
+      expect(element.errorState).toBeTrue();
+    });
   });
 
-  it('should handle file drop', () => {
-    const element = getElement(0);
-    const file = getFile();
+  describe('disabled', () => {
+    let selectors: Selectors<FileInputDisabled>;
 
-    spyOn(element.selectionChange, 'emit');
-    element.handleFileDrop([file]);
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputDisabled);
+    }));
 
-    expect(element.value).toEqual(file);
-    expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
-  });
+    it('should return disabled state correctly', () => {
+      const element = selectors.fileInput;
+      expect(element.disabled).toBeTrue();
 
-  it('should handle file drop with multiple', () => {
-    const element = getElement(1);
-    const files = [getFile(), getFile()];
+      expect(element.setDisabledState(false));
+      expect(element.disabled).toBeFalse();
+    });
 
-    spyOn(element.selectionChange, 'emit');
-    element.handleFileDrop(files);
+    it('should not handle selection when disabled', () => {
+      const element = selectors.fileInput;
+      const file = getFile();
 
-    expect(element.value).toEqual(files);
-    expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
-  });
+      spyOn(element.selectionChange, 'emit');
+      element.handleFileDrop([file]);
 
-  it('should return disabled state correctly', () => {
-    const element = getElement(2);
-    expect(element.disabled).toBeTrue();
-
-    expect(element.setDisabledState(false));
-    expect(element.disabled).toBeFalse();
-  });
-
-  it('should return the error state correctly', () => {
-    const element = getElement(0);
-    const formControl = elements[0].componentInstance.fileCtrl as FormControl<FileInputValue>;
-    expect(formControl.touched).toBeFalse();
-    expect(element.errorState).toBeFalse();
-
-    formControl.markAsTouched();
-    fixture.detectChanges();
-    expect(formControl.touched).toBeTrue();
-    expect(element.errorState).toBeTrue();
-  });
-
-  it('should return the focused state correctly', () => {
-    const element = getElement(0);
-    const input = elements[0].nativeElement as HTMLInputElement;
-    expect(element.focused).toBeFalse();
-
-    input.dispatchEvent(new Event('focus'));
-    expect(element.focused).toBeTrue();
-
-    input.dispatchEvent(new Event('blur'));
-    expect(element.focused).toBeFalse();
-  });
-
-  it('should lose focus when disabled', () => {
-    const element = getElement(0);
-    const input = elements[0].nativeElement as HTMLInputElement;
-    expect(element.focused).toBeFalse();
-
-    input.dispatchEvent(new Event('focus'));
-    expect(element.focused).toBeTrue();
-
-    element.disabled = true;
-    expect(element.focused).toBeFalse();
-  });
-
-  it('should return the empty state correctly', () => {
-    const element = getElement(1);
-    expect(element.empty).toBeTrue();
-
-    element._fileValue = [getFile(), getFile()];
-    expect(element.empty).toBeFalse();
+      expect(element.value).toBeNull();
+      expect(element.selectionChange.emit).not.toHaveBeenCalled();
+    });
   });
 });
 
 @Component({
-  template: `
-    <input type="file" />
-    <input fileInput type="file" [formControl]="fileCtrl" />
-    <input fileInput type="file" multiple />
-    <input fileInput type="file" disabled />
-  `,
+  template: `<input fileInput type="file" />`,
 })
-class TestComponent {
+class FileInputBasic {}
+
+@Component({
+  template: `<input fileInput type="file" multiple />`,
+})
+class FileInputMultiple {}
+
+@Component({
+  // This combination is not valid! "Append" should only be used together with "multiple".
+  template: `<input fileInput type="file" mode="append" />`,
+})
+class FileInputAppend {}
+
+@Component({
+  template: `<input fileInput type="file" multiple mode="append" />`,
+})
+class FileInputMultipleAppend {}
+
+@Component({
+  template: `<input fileInput type="file" [formControl]="fileCtrl" />`,
+})
+class FileInputWithFormControl {
   fileCtrl = new FormControl<FileInputValue>(null, [Validators.required]);
 }
+
+@Component({
+  template: `<input fileInput type="file" disabled />`,
+})
+class FileInputDisabled {}

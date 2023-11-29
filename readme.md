@@ -178,11 +178,12 @@ Now that we have seen the minimal setup, here are some configuration options for
 
 ### FileInput directive
 
-| Property   | Description                          |
-| ---------- | ------------------------------------ |
-| `accept`   | Defines the accepted file types.     |
-| `multiple` | Allow multiple files to be selected. |
-| `disabled` | Disables any interaction.            |
+| Property   | Description                                                                            | Options                                                                                 |
+| ---------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `accept`   | Defines the accepted file types.                                                       | See [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept) |
+| `mode`     | On select, either replace or append the new files. Works only with multiple attribute. | `replace` or `append`                                                                   |
+| `multiple` | Allow multiple files to be selected.                                                   | `Boolean`                                                                               |
+| `disabled` | Disables any interaction.                                                              | `Boolean`                                                                               |
 
 ### Material dropzone
 
