@@ -16,8 +16,8 @@ export class DropzoneService {
 
     const fsEntries = Array.from(event.dataTransfer?.items ?? [])
       .map((item) => this._toFileSystemEntry(item))
-      .filter(nonNullable)
-      .map((entry) => this._getFilesFromEntry(entry));
+      .map((entry) => this._getFilesFromEntry(entry))
+      .filter(nonNullable);
 
     const files: File[][] = await Promise.all(fsEntries);
     return this._flattenFiles(files);
@@ -34,7 +34,9 @@ export class DropzoneService {
     return item.webkitGetAsEntry() || item.getAsFile();
   }
 
-  private async _getFilesFromEntry(entry: FileSystemEntry | File): Promise<File[]> {
+  private async _getFilesFromEntry(entry: FileSystemEntry | File | null): Promise<File[]> {
+    if (!entry) return [];
+
     if (entry instanceof File) {
       return [entry];
     }
