@@ -11,11 +11,7 @@ export class AcceptService {
    * for more information.
    */
   accepts(fileValue: FileInputValue, accept: string): boolean {
-    if (!fileValue) {
-      return false;
-    }
-
-    if (accept === '*') {
+    if (!fileValue || accept === '*') {
       return true;
     }
 

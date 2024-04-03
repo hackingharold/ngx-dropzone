@@ -11,7 +11,7 @@ describe('AcceptService', () => {
     getFile('doc', 'application/msword'),
     getFile('docx', 'application/msword'),
     getFile('txt'),
-    getFile('pdf', 'application/octet-stream')
+    getFile('pdf', 'application/octet-stream'),
   ];
 
   beforeEach(() => {
@@ -55,8 +55,8 @@ describe('AcceptService', () => {
     expect(accepted).toBeTrue();
   });
 
-  it('should not accept null', () => {
-    const accepted = service.accepts(null, '*');
-    expect(accepted).toBeFalse();
+  it('should skip filter on null', () => {
+    const accepted = service.accepts(null, 'image/png');
+    expect(accepted).toBeTrue();
   });
 });
