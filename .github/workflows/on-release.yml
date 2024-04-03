@@ -19,7 +19,7 @@ jobs:
           always-auth: true
           token: ${{ secrets.NPM_TOKEN }}
       - uses: oven-sh/setup-bun@v1
-      - run: bun install
+      - run: bun install --frozen-lockfile
 
       - run: bun run build:cdk
       - run: bun run build:material
