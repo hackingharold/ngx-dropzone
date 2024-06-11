@@ -78,8 +78,8 @@ Now you can use it in your markup.
 </mat-form-field>
 ```
 
-The dropzone supports dropping folders by default.
-All files from subdirectories will be provided as a flat `File[]`.
+Use the `webkitdirectories` attribute to support uploading folders.
+All files from subdirectories will be provided as a flat `File[]`, but with an additional `relativePath` property to keep tree structures.
 
 ## Usage with FormControl and validation
 

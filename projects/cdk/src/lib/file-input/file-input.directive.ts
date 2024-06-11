@@ -178,7 +178,9 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   @HostListener('change', ['$event.target.files'])
   _handleChange(fileList: FileList) {
     if (this.disabled) return;
-    this._fileValue = this.multiple ? Array.from(fileList) : fileList.item(0);
+
+    const files = this.multiple ? Array.from(fileList) : fileList.item(0);
+    this._fileValue = this._copyRelativePaths(files);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange?.(this._fileValue);
@@ -223,6 +225,25 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
       this._focused = focused;
       this.stateChanges.next();
     }
+  }
+
+  /**
+   * On directory drops, the readonly `webkitRelativePath` property is not available.
+   * We manually set the `relativePath` property for dropped file trees instead.
+   * To achieve a consistent behavior when using the file picker, we copy the value.
+   */
+  private _copyRelativePaths(value: FileInputValue) {
+    if (!value) return value;
+
+    if (Array.isArray(value)) {
+      return value.map((file) => {
+        file.relativePath = file.webkitRelativePath;
+        return file;
+      });
+    }
+
+    value.relativePath = value.webkitRelativePath;
+    return value;
   }
 
   /** Asserts that the provided value type matches the input element's multiple attribute. */
