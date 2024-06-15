@@ -1,5 +1,6 @@
 # ngx-dropzone
 
+[![Demo](https://img.shields.io/badge/DEMO-blue)](https://stackblitz.com/edit/ngx-dropzone-showcase?file=src%2Fmain.ts)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hackingharold/ngx-dropzone/blob/HEAD/LICENSE)
 [![CDK](https://img.shields.io/npm/v/@ngx-dropzone/cdk?color=brightgreen&label=CDK)](https://www.npmjs.org/package/@ngx-dropzone/cdk)
 [![Material](https://img.shields.io/npm/v/@ngx-dropzone/material?color=brightgreen&label=Material)](https://www.npmjs.org/package/@ngx-dropzone/material)
@@ -16,6 +17,7 @@ Like the Angular Material repo, it uses a monorepo setup for maximum extensibili
 While the CDK itself is basically headless, the Material implementation relies
 on the [Angular Material components](https://github.com/angular/components) to
 provide a consistent style integration.
+See the [DEMO](https://stackblitz.com/edit/ngx-dropzone-showcase?file=src%2Fmain.ts) for an example.
 
 ![Dropzone Material screenshot](example.png)
 
