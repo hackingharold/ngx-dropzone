@@ -198,6 +198,17 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     this._onChange?.(this._fileValue);
   }
 
+  /** Resets the internal value. */
+  clear() {
+    this._value = this.multiple ? [] : null;
+
+    this._updateErrorState();
+    this.stateChanges.next();
+
+    this.selectionChange.emit(this._value);
+    this._onChange?.(this._value);
+  }
+
   /** Sets the selected files value as required by the `ControlValueAccessor` interface. */
   writeValue(value: FileInputValue) {
     this._fileValue = value;

@@ -80,6 +80,17 @@ describe('FileInputDirective', () => {
       expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
     });
 
+    it('should reset value on clear', () => {
+      const element = selectors.fileInput;
+      const file = getFile();
+
+      element._fileValue = file;
+      expect(element.value).toEqual(file);
+
+      element.clear();
+      expect(element.value).toBeNull();
+    });
+
     it('should return the focused state correctly', () => {
       const element = selectors.fileInput;
       const input = selectors.inputElement.nativeElement as HTMLInputElement;
@@ -174,6 +185,28 @@ describe('FileInputDirective', () => {
 
       element.handleFileDrop(files2);
       expect(element.value).toEqual(files2);
+    });
+
+    it('should replace value with empty array', () => {
+      const element = selectors.fileInput;
+      const files = [getFile(), getFile()];
+
+      element.handleFileDrop(files);
+      expect(element.value).toEqual(files);
+
+      element.handleFileDrop([]);
+      expect(element.value).toEqual([]);
+    });
+
+    it('should reset multiple value on clear', () => {
+      const element = selectors.fileInput;
+      const files = [getFile(), getFile()];
+
+      element.handleFileDrop(files);
+      expect(element.value).toEqual(files);
+
+      element.clear();
+      expect(element.value).toEqual([]);
     });
   });
 
