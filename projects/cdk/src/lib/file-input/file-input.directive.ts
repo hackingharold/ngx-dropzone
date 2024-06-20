@@ -57,7 +57,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     if (newValue !== this._value || Array.isArray(newValue)) {
       this._assertMultipleValue(newValue);
 
-      this._value = this._appendOrReplace(newValue);
+      this._value = newValue;
       this._updateErrorState();
 
       this._onTouched?.();
@@ -180,7 +180,8 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     if (this.disabled) return;
 
     const files = this.multiple ? Array.from(fileList) : fileList.item(0);
-    this._fileValue = this._copyRelativePaths(files);
+    const filesWithPaths = this._copyRelativePaths(files);
+    this._fileValue = this._appendOrReplace(filesWithPaths);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange?.(this._fileValue);
@@ -192,21 +193,10 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   /** Handles the drop of a file array. */
   handleFileDrop(files: File[]) {
     if (this.disabled) return;
-    this._fileValue = this.multiple ? files : files[0];
+    this._fileValue = this._appendOrReplace(this.multiple ? files : files[0]);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange?.(this._fileValue);
-  }
-
-  /** Resets the internal value. */
-  clear() {
-    this._value = this.multiple ? [] : null;
-
-    this._updateErrorState();
-    this.stateChanges.next();
-
-    this.selectionChange.emit(this._value);
-    this._onChange?.(this._value);
   }
 
   /** Sets the selected files value as required by the `ControlValueAccessor` interface. */

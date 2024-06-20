@@ -87,7 +87,7 @@ describe('FileInputDirective', () => {
       element._fileValue = file;
       expect(element.value).toEqual(file);
 
-      element.clear();
+      element.writeValue(null);
       expect(element.value).toBeNull();
     });
 
@@ -198,14 +198,14 @@ describe('FileInputDirective', () => {
       expect(element.value).toEqual([]);
     });
 
-    it('should reset multiple value on clear', () => {
+    it('should reset multiple value when overriding value', () => {
       const element = selectors.fileInput;
       const files = [getFile(), getFile()];
 
       element.handleFileDrop(files);
       expect(element.value).toEqual(files);
 
-      element.clear();
+      element.writeValue([]);
       expect(element.value).toEqual([]);
     });
   });
