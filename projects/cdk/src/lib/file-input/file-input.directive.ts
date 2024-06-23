@@ -57,7 +57,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
     if (newValue !== this._value || Array.isArray(newValue)) {
       this._assertMultipleValue(newValue);
 
-      this._value = this._appendOrReplace(newValue);
+      this._value = newValue;
       this._updateErrorState();
 
       this._onTouched?.();
@@ -178,7 +178,10 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   @HostListener('change', ['$event.target.files'])
   _handleChange(fileList: FileList) {
     if (this.disabled) return;
-    this._fileValue = this.multiple ? Array.from(fileList) : fileList.item(0);
+
+    const files = this.multiple ? Array.from(fileList) : fileList.item(0);
+    const filesWithPaths = this._copyRelativePaths(files);
+    this._fileValue = this._appendOrReplace(filesWithPaths);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange?.(this._fileValue);
@@ -190,7 +193,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   /** Handles the drop of a file array. */
   handleFileDrop(files: File[]) {
     if (this.disabled) return;
-    this._fileValue = this.multiple ? files : files[0];
+    this._fileValue = this._appendOrReplace(this.multiple ? files : files[0]);
 
     this.selectionChange.emit(this._fileValue);
     this._onChange?.(this._fileValue);
@@ -223,6 +226,25 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
       this._focused = focused;
       this.stateChanges.next();
     }
+  }
+
+  /**
+   * On directory drops, the readonly `webkitRelativePath` property is not available.
+   * We manually set the `relativePath` property for dropped file trees instead.
+   * To achieve a consistent behavior when using the file picker, we copy the value.
+   */
+  private _copyRelativePaths(value: FileInputValue) {
+    if (!value) return value;
+
+    if (Array.isArray(value)) {
+      return value.map((file) => {
+        file.relativePath = file.webkitRelativePath;
+        return file;
+      });
+    }
+
+    value.relativePath = value.webkitRelativePath;
+    return value;
   }
 
   /** Asserts that the provided value type matches the input element's multiple attribute. */

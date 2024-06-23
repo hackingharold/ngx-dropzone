@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { nonNullable } from '../coercion';
+import { File } from './../file-input';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +44,10 @@ export class DropzoneService {
 
     if (this._isFile(entry)) {
       const file = await this._readFilePromise(entry);
+
+      // Manually set the `relativePath` property for dropped files.
+      file.relativePath = entry.fullPath?.slice(1) ?? '';
+
       return [file];
     }
 
