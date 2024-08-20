@@ -210,7 +210,7 @@ Other available commands are `bun run [build|test|lint]:[cdk|material]`.
 This library provides a ready-to-use Material Design implementation for the dropzone.
 However, you might want to apply your own custom styling (or library).
 
-In this case, you're able to build upon the dropzone CDK. See the [Material dropzone](/projects/material/src/lib/mat-dropzone.component.ts) as an example.
+In this case, you're able to build upon the dropzone CDK. See the [Material dropzone](/projects/material/src/lib/mat-dropzone/mat-dropzone.component.ts) as an example.
 
 The basic setup requires you to import the `DropzoneCdkModule` into your app.
 
