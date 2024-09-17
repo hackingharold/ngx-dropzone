@@ -14,14 +14,32 @@ import {
 import { Validators } from '@angular/forms';
 import { MatChipRow } from '@angular/material/chips';
 import { MatFormField, MatFormFieldControl } from '@angular/material/form-field';
-import { coerceBoolean, DropzoneComponent, FileInputValue } from '@ngx-dropzone/cdk';
+import {
+  AcceptService,
+  coerceBoolean,
+  DropzoneComponent,
+  DropzoneService,
+  FileInputDirective,
+  FileInputValue,
+} from '@ngx-dropzone/cdk';
 import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'ngx-mat-dropzone',
   exportAs: 'matDropzone',
+  standalone: true,
+  imports: [MatFormField, MatChipRow, FileInputDirective, DropzoneComponent],
+  providers: [
+    DropzoneService,
+    AcceptService,
+    {
+      provide: MatFormFieldControl,
+      useExisting: MatDropzone,
+    },
+  ],
   template: `
     <ng-content select="[fileInput]"></ng-content>
+
     <div class="mat-chip-grid" [class.filled-and-float]="filled && shouldLabelFloat">
       <ng-content select="mat-chip-row"></ng-content>
     </div>
@@ -57,12 +75,6 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: MatFormFieldControl,
-      useExisting: MatDropzone,
-    },
-  ],
 })
 export class MatDropzone
   extends DropzoneComponent
