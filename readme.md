@@ -38,7 +38,7 @@ npm install @ngx-dropzone/cdk @ngx-dropzone/material
 ## Versioning
 
 For the versioning, we stay consistent with the major Angular releases.
-So Angular (components) 18 will be compatible with `@ngx-dropzone/cdk@18.x.x`.
+So Angular (components) 19 will be compatible with `@ngx-dropzone/cdk@19.x.x`.
 
 Please note, that v16 is the first officially supported version.
 For older Angular releases, use the libs at your own risk.
@@ -48,22 +48,24 @@ For older Angular releases, use the libs at your own risk.
 This describes how to use the Material dropzone.
 If you want to extend the CDK with your own styling, see below.
 
-```js
-// in app.module.ts
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
-import { DropzoneMaterialModule } from '@ngx-dropzone/material';
+```ts
+// in app.component.ts
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { FileInputDirective } from '@ngx-dropzone/cdk';
+import { MatDropzone } from '@ngx-dropzone/material';
 
-@NgModule({
+@Component({
   ...
   imports: [
-    MatFormFieldModule,
-    DropzoneCdkModule,
-    DropzoneMaterialModule,
+    MatFormField,
+    MatLabel,
+    MatIcon,
+    MatDropzone,
+    FileInputDirective,
   ],
   ...
 })
-export class AppModule { }
 ```
 
 Now you can use it in your markup.
@@ -88,27 +90,19 @@ for `[(ngModel)]` and `[formControl]` directives, so you can seamlessly integrat
 file upload into your form.
 
 First, make sure to import the `ReactiveFormsModule`.
-
-```js
-// in app.module.ts
-import { ReactiveFormsModule } from '@angular/forms';
-
-@NgModule({
-  ...
-  imports: [
-    ReactiveFormsModule,
-    ...
-  ],
-  ...
-})
-export class AppModule { }
-```
-
 Then, you're able to define your form control element (incl. validation).
 
 ```ts
+// in app.component.ts
+import { ReactiveFormsModule } from '@angular/forms';
+
 @Component({
   selector: "form-control-dropzone",
+  imports: [
+    ReactiveFormsModule,
+    MatError,
+    ...
+  ],
   template: `
     <mat-form-field>
       <ngx-mat-dropzone>
@@ -164,7 +158,7 @@ because people are way too opinionated about their styling and behaviour.
 </mat-form-field>
 ```
 
-```js
+```ts
 export class AppComponent {
   fileCtrl = new FormControl();
 
@@ -212,32 +206,18 @@ However, you might want to apply your own custom styling (or library).
 
 In this case, you're able to build upon the dropzone CDK. See the [Material dropzone](/projects/material/src/lib/mat-dropzone/mat-dropzone.component.ts) as an example.
 
-The basic setup requires you to import the `DropzoneCdkModule` into your app.
-
-```js
-// in app.module.ts
-import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
-
-@NgModule({
-  ...
-  imports: [
-    DropzoneCdkModule,
-  ],
-  ...
-})
-export class AppModule { }
-```
-
-Next up, you extend the `DropzoneComponent` and apply your own styling and functionality.
+The basic setup requires you to extend the `DropzoneComponent` in your app to apply your own styling and functionality.
 Use the following skeleton as a starting point. You may always have a look at the
 Material reference implementation linked above.
 
 ```ts
 import { Component } from "@angular/core";
-import { DropzoneComponent } from "@ngx-dropzone/cdk";
+import { AcceptService, DropzoneComponent, DropzoneService, FileInputDirective } from "@ngx-dropzone/cdk";
 
 @Component({
   selector: "my-dropzone",
+  imports: [FileInputDirective, DropzoneComponent],
+  providers: [DropzoneService, AcceptService],
   template: `
     <div class="my-dropzone">
       <ng-content select="[fileInput]"></ng-content>
