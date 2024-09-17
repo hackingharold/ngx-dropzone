@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { nonNullable } from '../coercion';
-import { File } from './../file-input';
+import { type File } from './../file-input';
 
 @Injectable({
   providedIn: 'root',
