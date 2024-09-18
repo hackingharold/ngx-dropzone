@@ -94,6 +94,7 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
 
   /** Controls the accepted file types. */
   @Input()
+  @HostBinding('accept')
   get accept(): string {
     return this._accept;
   }
