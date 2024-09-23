@@ -1,6 +1,6 @@
 import { Component, DebugElement, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
 import { FileInputValue } from './file-input-value';
@@ -24,8 +24,7 @@ const getFileList = (files: File[]): FileList => {
 describe('FileInputDirective', () => {
   function configureFileInputTestingModule<T>(testComponent: Type<T>): Selectors<T> {
     const fixture = TestBed.configureTestingModule({
-      imports: [FormsModule, ReactiveFormsModule],
-      declarations: [FileInputDirective, testComponent],
+      imports: [testComponent],
     }).createComponent(testComponent);
 
     const inputElement = fixture.debugElement.query(By.directive(FileInputDirective));
@@ -299,27 +298,37 @@ describe('FileInputDirective', () => {
 });
 
 @Component({
+  standalone: true,
+  imports: [FileInputDirective],
   template: `<input fileInput type="file" />`,
 })
 class FileInputBasic {}
 
 @Component({
+  standalone: true,
+  imports: [FileInputDirective],
   template: `<input fileInput type="file" multiple />`,
 })
 class FileInputMultiple {}
 
 @Component({
+  standalone: true,
+  imports: [FileInputDirective],
   // This combination is not valid! "Append" should only be used together with "multiple".
   template: `<input fileInput type="file" mode="append" />`,
 })
 class FileInputAppend {}
 
 @Component({
+  standalone: true,
+  imports: [FileInputDirective],
   template: `<input fileInput type="file" multiple mode="append" />`,
 })
 class FileInputMultipleAppend {}
 
 @Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, FileInputDirective],
   template: `<input fileInput type="file" [formControl]="fileCtrl" />`,
 })
 class FileInputWithFormControl {
@@ -327,6 +336,8 @@ class FileInputWithFormControl {
 }
 
 @Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, FileInputDirective],
   template: `<input fileInput type="file" disabled />`,
 })
 class FileInputDisabled {}

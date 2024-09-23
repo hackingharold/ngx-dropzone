@@ -4,6 +4,11 @@ import { AcceptService } from './accept.service';
 describe('AcceptService', () => {
   let service: AcceptService;
 
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(AcceptService);
+  });
+
   /** Returns a simple fake file with given extension and optional type. */
   const getFile = (ext: string, type?: string) => new File(['...'], `${Date.now()}.${ext}`, { type });
 
@@ -13,11 +18,6 @@ describe('AcceptService', () => {
     getFile('txt'),
     getFile('pdf', 'application/octet-stream'),
   ];
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AcceptService);
-  });
 
   it('should filter based on file extension', () => {
     const files = getFileList();
