@@ -20,6 +20,9 @@ import { DropzoneService } from './dropzone.service';
 @Component({
   selector: 'ngx-dropzone',
   exportAs: 'dropzone',
+  standalone: true,
+  imports: [FileInputDirective],
+  providers: [DropzoneService],
   template: `<ng-content></ng-content>`,
   host: {
     tabindex: '0',

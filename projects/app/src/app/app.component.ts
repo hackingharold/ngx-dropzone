@@ -1,8 +1,28 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatChipRow } from '@angular/material/chips';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { FileInputDirective } from '@ngx-dropzone/cdk';
+import { MatDropzone } from '@ngx-dropzone/material';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatChipRow,
+    MatIcon,
+    MatDropzone,
+    FileInputDirective,
+  ],
   template: `<div class="app-container">
     <mat-form-field appearance="outline">
       <mat-label>Drop only .png files!</mat-label>
