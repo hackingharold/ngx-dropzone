@@ -25,6 +25,26 @@ describe('AcceptService', () => {
     expect(accepted).toBeFalse();
   });
 
+  it('should accept file if extension is uppercase', () => {
+    const files = [getFile('PDF')];
+
+    const acceptedUpper = service.accepts(files, '.PDF');
+    expect(acceptedUpper).toBeTrue();
+
+    const acceptedLower = service.accepts(files, '.pdf');
+    expect(acceptedLower).toBeTrue();
+  });
+
+  it('should accept file if extension is lowercase', () => {
+    const files = [getFile('pdf')];
+
+    const acceptedUpper = service.accepts(files, '.PDF');
+    expect(acceptedUpper).toBeTrue();
+
+    const acceptedLower = service.accepts(files, '.pdf');
+    expect(acceptedLower).toBeTrue();
+  });
+
   it('should filter based on MIME type', () => {
     const files = getFileList();
     const accepted = service.accepts(files, 'application/msword, application, random/MIME');
