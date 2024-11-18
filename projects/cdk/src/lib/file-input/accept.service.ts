@@ -27,7 +27,7 @@ export class AcceptService {
   }
 
   private isAcceptedByExtension(file: File, acceptedExtensions: string[]): boolean {
-    return acceptedExtensions.some((ext) => file.name.endsWith(ext));
+    return acceptedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext));
   }
 
   private isAcceptedByMimeType(file: File, acceptedMimeTypes: string[]): boolean {
