@@ -10,7 +10,6 @@ import { MatDropzone } from '@ngx-dropzone/material';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

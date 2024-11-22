@@ -146,7 +146,6 @@ describe('DropzoneComponent', () => {
 
 @Component({
   selector: 'basic-dropzone',
-  standalone: true,
   imports: [DropzoneComponent, FileInputDirective],
   template: `
     <ngx-dropzone>
@@ -158,7 +157,6 @@ class DropzoneBasic {}
 
 @Component({
   selector: 'form-control-dropzone',
-  standalone: true,
   imports: [ReactiveFormsModule, DropzoneComponent, FileInputDirective],
   template: `
     <ngx-dropzone>

@@ -27,7 +27,6 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 @Component({
   selector: 'ngx-mat-dropzone',
   exportAs: 'matDropzone',
-  standalone: true,
   imports: [MatFormField, MatChipRow, FileInputDirective, DropzoneComponent],
   providers: [
     DropzoneService,

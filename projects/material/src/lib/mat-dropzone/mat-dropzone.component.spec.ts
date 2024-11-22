@@ -118,7 +118,6 @@ describe('MatDropzone', () => {
 
 @Component({
   selector: 'basic-dropzone',
-  standalone: true,
   imports: [MatFormFieldModule, MatDropzone, FileInputDirective],
   template: `
     <mat-form-field>
@@ -133,7 +132,6 @@ class DropzoneBasic {}
 
 @Component({
   selector: 'form-control-dropzone',
-  standalone: true,
   imports: [ReactiveFormsModule, MatFormFieldModule, MatIconModule, MatChipsModule, MatDropzone, FileInputDirective],
   template: `
     <mat-form-field>

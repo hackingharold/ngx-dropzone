@@ -298,21 +298,18 @@ describe('FileInputDirective', () => {
 });
 
 @Component({
-  standalone: true,
   imports: [FileInputDirective],
   template: `<input fileInput type="file" />`,
 })
 class FileInputBasic {}
 
 @Component({
-  standalone: true,
   imports: [FileInputDirective],
   template: `<input fileInput type="file" multiple />`,
 })
 class FileInputMultiple {}
 
 @Component({
-  standalone: true,
   imports: [FileInputDirective],
   // This combination is not valid! "Append" should only be used together with "multiple".
   template: `<input fileInput type="file" mode="append" />`,
@@ -320,14 +317,12 @@ class FileInputMultiple {}
 class FileInputAppend {}
 
 @Component({
-  standalone: true,
   imports: [FileInputDirective],
   template: `<input fileInput type="file" multiple mode="append" />`,
 })
 class FileInputMultipleAppend {}
 
 @Component({
-  standalone: true,
   imports: [ReactiveFormsModule, FileInputDirective],
   template: `<input fileInput type="file" [formControl]="fileCtrl" />`,
 })
@@ -336,7 +331,6 @@ class FileInputWithFormControl {
 }
 
 @Component({
-  standalone: true,
   imports: [ReactiveFormsModule, FileInputDirective],
   template: `<input fileInput type="file" disabled />`,
 })
