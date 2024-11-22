@@ -23,7 +23,6 @@ import { FileInputMode, FileInputValue } from './file-input-value';
 @Directive({
   selector: 'input[fileInput]',
   exportAs: 'fileInput',
-  standalone: true,
   host: {
     style: 'display: none',
     '(focus)': '_focusChanged(true)',
