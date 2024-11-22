@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { FileInputDirective, FileInputValidators, FileInputValue } from '../file-input';
-import { DropzoneCdkModule } from './../cdk.module';
 import { DropzoneComponent } from './dropzone.component';
 
 interface Selectors<T> {
@@ -17,8 +16,7 @@ interface Selectors<T> {
 describe('DropzoneComponent', () => {
   function configureDropzoneTestingModule<T>(testComponent: Type<T>): Selectors<T> {
     const fixture = TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, DropzoneCdkModule],
-      declarations: [testComponent],
+      imports: [testComponent],
     }).createComponent(testComponent);
 
     const element = fixture.debugElement.query(By.directive(DropzoneComponent));
@@ -148,6 +146,7 @@ describe('DropzoneComponent', () => {
 
 @Component({
   selector: 'basic-dropzone',
+  imports: [DropzoneComponent, FileInputDirective],
   template: `
     <ngx-dropzone>
       <input type="file" fileInput />
@@ -158,6 +157,7 @@ class DropzoneBasic {}
 
 @Component({
   selector: 'form-control-dropzone',
+  imports: [ReactiveFormsModule, DropzoneComponent, FileInputDirective],
   template: `
     <ngx-dropzone>
       <input type="file" fileInput [formControl]="fileCtrl" multiple />

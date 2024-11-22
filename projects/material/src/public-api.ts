@@ -3,4 +3,3 @@
  */
 
 export * from './lib/mat-dropzone';
-export * from './lib/material.module';

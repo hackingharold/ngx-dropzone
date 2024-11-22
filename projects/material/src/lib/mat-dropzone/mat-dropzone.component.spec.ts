@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, DebugElement, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -6,8 +7,7 @@ import { MatError, MatFormFieldModule, MatLabel } from '@angular/material/form-f
 import { MatIconModule } from '@angular/material/icon';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DropzoneCdkModule, FileInputDirective, FileInputValidators, FileInputValue } from '@ngx-dropzone/cdk';
-import { DropzoneMaterialModule } from '../material.module';
+import { FileInputDirective, FileInputValidators, FileInputValue } from '@ngx-dropzone/cdk';
 import { MatDropzone } from './mat-dropzone.component';
 
 interface Selectors<T> {
@@ -25,16 +25,7 @@ interface Selectors<T> {
 describe('MatDropzone', () => {
   function configureDropzoneTestingModule<T>(testComponent: Type<T>): Selectors<T> {
     const fixture = TestBed.configureTestingModule({
-      imports: [
-        BrowserAnimationsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatChipsModule,
-        DropzoneCdkModule,
-        DropzoneMaterialModule,
-      ],
-      declarations: [testComponent],
+      imports: [CommonModule, BrowserAnimationsModule, testComponent],
     }).createComponent(testComponent);
 
     const element = fixture.debugElement.query(By.directive(MatDropzone));
@@ -127,6 +118,7 @@ describe('MatDropzone', () => {
 
 @Component({
   selector: 'basic-dropzone',
+  imports: [MatFormFieldModule, MatDropzone, FileInputDirective],
   template: `
     <mat-form-field>
       <mat-label>Drop it basic!</mat-label>
@@ -140,6 +132,7 @@ class DropzoneBasic {}
 
 @Component({
   selector: 'form-control-dropzone',
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatIconModule, MatChipsModule, MatDropzone, FileInputDirective],
   template: `
     <mat-form-field>
       <ngx-mat-dropzone>
