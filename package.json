@@ -31,10 +31,10 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.0.4",
     "@angular-eslint/builder": "^19.0.0",
-    "@angular-eslint/eslint-plugin": "19.0.0",
-    "@angular-eslint/eslint-plugin-template": "19.0.0",
+    "@angular-eslint/eslint-plugin": "19.0.1",
+    "@angular-eslint/eslint-plugin-template": "19.0.1",
     "@angular-eslint/schematics": "^19.0.1",
-    "@angular-eslint/template-parser": "19.0.0",
+    "@angular-eslint/template-parser": "19.0.1",
     "@angular/cli": "^19.0.4",
     "@angular/compiler-cli": "^19.0.1",
     "@types/jasmine": "~5.1.5",
