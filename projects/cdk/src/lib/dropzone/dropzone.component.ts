@@ -31,7 +31,6 @@ import { DropzoneService } from './dropzone.service';
     '[class.ng-dirty]': '_forwardProp("dirty")',
     '[class.ng-valid]': '_forwardProp("valid")',
     '[class.ng-invalid]': '_forwardProp("invalid")',
-    ondragover: 'event.preventDefault()',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,6 +106,11 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   _forwardProp(prop: keyof NgControl): boolean {
     return !!this.fileInputDirective?.ngControl?.[prop];
   }
+
+  @HostListener('dragover', ['$event'])
+  _onDragOver = (event: DragEvent) => {
+    event?.preventDefault();
+  };
 
   @HostListener('dragenter', ['$event'])
   _onDragEnter = (event: DragEvent) => {
