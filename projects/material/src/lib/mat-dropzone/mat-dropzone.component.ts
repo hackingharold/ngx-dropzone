@@ -112,7 +112,6 @@ export class MatDropzone
   private _placeholder = '';
 
   @Input()
-  @HostBinding('attr.aria-required')
   get required(): boolean {
     const controlRequired = this.ngControl?.control?.hasValidator(Validators.required);
     return this._required || controlRequired || false;
@@ -138,6 +137,13 @@ export class MatDropzone
   @HostBinding('attr.aria-invalid')
   get ariaInvalid() {
     return this.empty && this.required ? null : this.errorState;
+  }
+
+  @HostBinding('attr.aria-required')
+  get ariaRequired() {
+    // Accessibility guidelines say that the attribute should be omitted when false,
+    // so we return null instead of false to remove it from the DOM.
+    return this.required || null;
   }
 
   ngAfterContentInit() {
