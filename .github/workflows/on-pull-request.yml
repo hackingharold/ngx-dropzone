@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
+      - uses: actions/setup-node@v3
+      - run: npm ci
 
-      - run: bun run lint:cdk
-      - run: bun run build:cdk
-      - run: bun run test:cdk
+      - run: npm run lint:cdk
+      - run: npm run build:cdk
+      - run: npm run test:cdk
 
   build-lint-test-material:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
+      - uses: actions/setup-node@v3
+      - run: npm ci
 
-      - run: bun run build:cdk
-      - run: bun run lint:material
-      - run: bun run build:material
-      - run: bun run test:material
+      - run: npm run build:cdk
+      - run: npm run lint:material
+      - run: npm run build:material
+      - run: npm run test:material
