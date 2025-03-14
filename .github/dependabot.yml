@@ -3,13 +3,18 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "friday"
     commit-message:
-      prefix: ":robot: dependabot"
+      prefix: ":robot: build"
       include: "scope"
     pull-request-branch-name:
       separator: "-"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 1
