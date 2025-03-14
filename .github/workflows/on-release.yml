@@ -19,11 +19,10 @@ jobs:
           always-auth: true
           token: ${{ secrets.NPM_TOKEN }}
 
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
+      - run: npm ci
 
-      - run: bun run build:cdk
-      - run: bun run build:material
+      - run: npm run build:cdk
+      - run: npm run build:material
 
       - name: Publish CDK to npm
         working-directory: dist/cdk
