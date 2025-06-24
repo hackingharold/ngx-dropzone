@@ -5,13 +5,12 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
   Output,
-  Self,
 } from '@angular/core';
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -136,19 +135,22 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   /** Event emitted when the selected files have been changed by the user. */
   @Output() readonly selectionChange = new EventEmitter<FileInputValue>();
 
-  constructor(
-    private _acceptService: AcceptService,
-    public elementRef: ElementRef<HTMLInputElement>,
-    @Optional() _parentForm: NgForm,
-    @Optional() _parentFormGroup: FormGroupDirective,
-    @Optional() @Self() public ngControl: NgControl
-  ) {
-    this._parent = _parentForm || _parentFormGroup;
+  static ngAcceptInputType_disabled: BooleanInput;
 
-    if (ngControl != null) {
+  private _acceptService = inject(AcceptService);
+  private _parentForm = inject(NgForm, { optional: true });
+  private _parentFormGroup = inject(FormGroupDirective, { optional: true });
+
+  public elementRef = inject(ElementRef<HTMLInputElement>);
+  public ngControl = inject(NgControl, { optional: true, self: true });
+
+  constructor() {
+    this._parent = this._parentForm || this._parentFormGroup;
+
+    if (this.ngControl != null) {
       // Setting the value accessor directly (instead of using
       // the providers) to allow access to error state.
-      ngControl.valueAccessor = this;
+      this.ngControl.valueAccessor = this;
     }
   }
 
