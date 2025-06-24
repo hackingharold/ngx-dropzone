@@ -38,7 +38,7 @@ npm install @ngx-dropzone/cdk @ngx-dropzone/material
 ## Versioning
 
 For the versioning, we stay consistent with the major Angular releases.
-So Angular (components) 19 will be compatible with `@ngx-dropzone/cdk@19.x.x`.
+So Angular (components) 20 will be compatible with `@ngx-dropzone/cdk@20.x.x`.
 
 Please note, that v16 is the first officially supported version.
 For older Angular releases, use the libs at your own risk.
