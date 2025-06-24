@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatChipRow } from '@angular/material/chips';
@@ -11,7 +11,6 @@ import { MatDropzone } from '@ngx-dropzone/material';
 @Component({
   selector: 'app-root',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
@@ -20,8 +19,8 @@ import { MatDropzone } from '@ngx-dropzone/material';
     MatChipRow,
     MatIcon,
     MatDropzone,
-    FileInputDirective,
-  ],
+    FileInputDirective
+],
   template: `<div class="app-container">
     <mat-form-field appearance="outline">
       <mat-label>Drop only .png files!</mat-label>

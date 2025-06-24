@@ -87,8 +87,8 @@ describe('MatDropzone', () => {
 
     it('should render chip', () => {
       const validFile = new File(['...'], `my-file.png`);
-      selectors.fileInput.ngControl.control?.setValue(validFile);
-      selectors.fileInput.ngControl.control?.markAsDirty(); // simulate user UI action
+      selectors.fileInput.ngControl?.control?.setValue(validFile);
+      selectors.fileInput.ngControl?.control?.markAsDirty(); // simulate user UI action
       selectors.fixture.detectChanges();
 
       const matChip = selectors.fixture.debugElement.query(By.directive(MatChipRow));
@@ -103,8 +103,8 @@ describe('MatDropzone', () => {
 
     it('should render error state', () => {
       const invalidFile = new File(['...'], `${Date.now()}.pdf`);
-      selectors.fileInput.ngControl.control?.setValue(invalidFile);
-      selectors.fileInput.ngControl.control?.markAsDirty(); // simulate user UI action
+      selectors.fileInput.ngControl?.control?.setValue(invalidFile);
+      selectors.fileInput.ngControl?.control?.markAsDirty(); // simulate user UI action
       selectors.fixture.detectChanges();
 
       expect(selectors.element.attributes['aria-invalid']).toBe('true');

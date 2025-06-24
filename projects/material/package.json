@@ -23,10 +23,10 @@
     "material"
   ],
   "peerDependencies": {
-    "@angular/common": "^19.0.0",
-    "@angular/core": "^19.0.0",
-    "@angular/forms": "^19.0.0",
-    "@ngx-dropzone/cdk": "^19.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@ngx-dropzone/cdk": "^20.0.0",
     "rxjs": "^7.4.0"
   }
 }
