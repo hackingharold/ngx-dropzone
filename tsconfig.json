@@ -4,12 +4,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@ngx-dropzone/cdk": [
-        "dist/cdk"
-      ],
-      "@ngx-dropzone/material": [
-        "dist/material"
-      ]
+      "@ngx-dropzone/cdk": ["dist/cdk"],
+      "@ngx-dropzone/material": ["dist/material"]
     },
     "outDir": "./dist/out-tsc",
     "esModuleInterop": true,
@@ -24,10 +20,6 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
     "isolatedModules": true,
     "useDefineForClassFields": true
   },
