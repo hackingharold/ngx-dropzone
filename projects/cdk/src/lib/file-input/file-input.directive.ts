@@ -178,9 +178,12 @@ export class FileInputDirective implements ControlValueAccessor, OnInit, OnChang
   }
 
   /** Handles the native (change) event. */
-  @HostListener('change', ['$event.target.files'])
-  _handleChange(fileList: FileList) {
+  @HostListener('change', ['$event'])
+  _handleChange(event: Event) {
     if (this.disabled) return;
+
+    const fileList = (event.target as HTMLInputElement)?.files;
+    if (!fileList || fileList.length === 0) return;
 
     const files = this.multiple ? Array.from(fileList) : fileList.item(0);
     const filesWithPaths = this._copyRelativePaths(files);

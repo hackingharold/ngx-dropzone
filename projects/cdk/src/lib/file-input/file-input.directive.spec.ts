@@ -15,10 +15,14 @@ interface Selectors<T> {
 /** Returns a simple fake file. */
 const getFile = () => new File(['...'], `${Date.now()}.txt`);
 
-const getFileList = (files: File[]): FileList => {
+const getFileListEvent = (files: File[]): Event => {
   const dt = new DataTransfer();
   files.forEach((f) => dt.items.add(f));
-  return dt.files;
+
+  const event = new Event('change') as Event & { target: HTMLInputElement };
+  Object.defineProperty(event, 'target', { value: { files: dt.files } });
+
+  return event;
 };
 
 describe('FileInputDirective', () => {
@@ -62,7 +66,7 @@ describe('FileInputDirective', () => {
       const file = getFile();
 
       spyOn(element.selectionChange, 'emit');
-      element._handleChange(getFileList([file]));
+      element._handleChange(getFileListEvent([file]));
 
       expect(element.value).toEqual(file);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
@@ -157,7 +161,7 @@ describe('FileInputDirective', () => {
       const files = [getFile(), getFile()];
 
       spyOn(element.selectionChange, 'emit');
-      element._handleChange(getFileList(files));
+      element._handleChange(getFileListEvent(files));
 
       expect(element.value).toEqual(files);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
