@@ -1,0 +1,5 @@
+{
+  "name": "ngx-dropzone",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bullseye",
+  "forwardPorts": [4200, 8080]
+}
