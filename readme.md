@@ -43,10 +43,104 @@ So Angular (components) 21 will be compatible with `@ngx-dropzone/cdk@21.x.x`.
 Please note, that v16 is the first officially supported version.
 For older Angular releases, use the libs at your own risk.
 
-## Basic usage
+## Using CDK Only (Without Material)
 
-This describes how to use the Material dropzone.
-If you want to extend the CDK with your own styling, see below.
+If you want to use the dropzone functionality with your own styling, you can use just the CDK package. The CDK exports are **standalone** and ready to use in modern Angular applications without any modules.
+
+### Available CDK Exports
+
+```ts
+import {
+  // Components & Directives
+  DropzoneComponent,      // Standalone component: <ngx-dropzone>
+  FileInputDirective,     // Standalone directive: input[fileInput]
+  
+  // Services
+  DropzoneService,
+  AcceptService,
+  
+  // Validators & Types
+  FileInputValidators,
+  FileInputValue,         // Type: File | File[] | null
+} from '@ngx-dropzone/cdk';
+```
+
+### Minimal Example
+
+```ts
+// app.component.ts
+import { Component, FormControl } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { 
+  DropzoneComponent, 
+  FileInputDirective, 
+  FileInputValidators,
+  FileInputValue 
+} from '@ngx-dropzone/cdk';
+
+@Component({
+  selector: 'app-root',
+  imports: [
+    ReactiveFormsModule,
+    DropzoneComponent,
+    FileInputDirective,
+  ],
+  template: `
+    <ngx-dropzone>
+      <input type="file" fileInput [formControl]="fileCtrl" multiple />
+      @if (fileCtrl.value) {
+        <div>{{ getFileCount() }} file(s) selected</div>
+      }
+    </ngx-dropzone>
+  `,
+  styles: [`
+    ngx-dropzone {
+      display: block;
+      padding: 40px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    
+    ngx-dropzone.dragover {
+      border-color: #2196f3;
+      background-color: #e3f2fd;
+    }
+    
+    ngx-dropzone.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  `],
+})
+export class AppComponent {
+  fileCtrl = new FormControl<FileInputValue>(null, [
+    FileInputValidators.accept('image/*'),
+    FileInputValidators.maxSize(5 * 1024 * 1024), // 5MB
+  ]);
+
+  getFileCount(): number {
+    const value = this.fileCtrl.value;
+    return Array.isArray(value) ? value.length : value ? 1 : 0;
+  }
+}
+```
+
+The `DropzoneComponent` automatically adds CSS classes for styling:
+- `.dragover` - when files are dragged over the dropzone
+- `.disabled` - when the file input is disabled
+- `.focused` - when the dropzone has focus
+- `.ng-valid`, `.ng-invalid`, `.ng-touched`, `.ng-pristine`, `.ng-dirty` - Angular form states
+
+For more details on validation and configuration options, see the sections below.
+
+## Basic usage (Material Design)
+
+This describes how to use the Material dropzone implementation.
+If you want to use just the CDK with your own styling, see the "Using CDK Only" section above.
+For advanced customization through component extension, see the Extensibility section below.
 
 ```ts
 // in app.component.ts
@@ -202,9 +296,11 @@ Other available commands are `npm run [build|test|lint]:[cdk|material]`.
 This library provides a ready-to-use Material Design implementation for the dropzone.
 However, you might want to apply your own custom styling (or library).
 
-In this case, you're able to build upon the dropzone CDK. See the [Material dropzone](/projects/material/src/lib/mat-dropzone/mat-dropzone.component.ts) as an example.
+**Note:** For most use cases, you can use `DropzoneComponent` directly with your own CSS as shown in the "Using CDK Only" section above. Only extend `DropzoneComponent` if you need to add custom behavior or encapsulate complex styling in a reusable component.
 
-The basic setup requires you to extend the `DropzoneComponent` in your app to apply your own styling and functionality.
+If you want to create your own dropzone component, you can extend the `DropzoneComponent` from the CDK. See the [Material dropzone](/projects/material/src/lib/mat-dropzone/mat-dropzone.component.ts) as an example.
+
+The basic setup requires you to create a standalone component that extends `DropzoneComponent` and import the required directives.
 Use the following skeleton as a starting point. You may always have a look at the
 Material reference implementation linked above.
 
