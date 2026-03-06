@@ -10,14 +10,16 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # to enable use of OIDC for npm provenance
+
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org/
-          always-auth: true
-          token: ${{ secrets.NPM_TOKEN }}
 
       - run: npm ci
 
@@ -27,11 +29,7 @@ jobs:
       - name: Publish CDK to npm
         working-directory: dist/cdk
         run: npm version ${{ github.ref_name }} && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Material to npm
         working-directory: dist/material
         run: npm version ${{ github.ref_name }} && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
