@@ -2,10 +2,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "rootDir": "./",
     "paths": {
-      "@ngx-dropzone/cdk": ["dist/cdk"],
-      "@ngx-dropzone/material": ["dist/material"]
+      "@ngx-dropzone/cdk": ["./dist/cdk"],
+      "@ngx-dropzone/material": ["./dist/material"]
     },
     "outDir": "./dist/out-tsc",
     "esModuleInterop": true,
