@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatChipRow } from '@angular/material/chips';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
@@ -49,6 +49,7 @@ import { MatDropzone } from '@ngx-dropzone/material';
       </ngx-mat-dropzone>
     </mat-form-field>
   </div>`,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .app-container {

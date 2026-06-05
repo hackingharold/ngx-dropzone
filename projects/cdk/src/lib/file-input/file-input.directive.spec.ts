@@ -1,4 +1,4 @@
-import { Component, DebugElement, Type } from '@angular/core';
+import { Component, DebugElement, Type, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -303,12 +303,14 @@ describe('FileInputDirective', () => {
 
 @Component({
   imports: [FileInputDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" />`,
 })
 class FileInputBasic {}
 
 @Component({
   imports: [FileInputDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" multiple />`,
 })
 class FileInputMultiple {}
@@ -316,18 +318,21 @@ class FileInputMultiple {}
 @Component({
   imports: [FileInputDirective],
   // This combination is not valid! "Append" should only be used together with "multiple".
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" mode="append" />`,
 })
 class FileInputAppend {}
 
 @Component({
   imports: [FileInputDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" multiple mode="append" />`,
 })
 class FileInputMultipleAppend {}
 
 @Component({
   imports: [ReactiveFormsModule, FileInputDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" [formControl]="fileCtrl" />`,
 })
 class FileInputWithFormControl {
@@ -336,6 +341,7 @@ class FileInputWithFormControl {
 
 @Component({
   imports: [ReactiveFormsModule, FileInputDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<input fileInput type="file" disabled />`,
 })
 class FileInputDisabled {}
