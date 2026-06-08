@@ -1,4 +1,4 @@
-import { Component, DebugElement, Type, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DebugElement, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -147,7 +147,6 @@ describe('DropzoneComponent', () => {
 @Component({
   selector: 'basic-dropzone',
   imports: [DropzoneComponent, FileInputDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ngx-dropzone>
       <input type="file" fileInput />
@@ -159,7 +158,6 @@ class DropzoneBasic {}
 @Component({
   selector: 'form-control-dropzone',
   imports: [ReactiveFormsModule, DropzoneComponent, FileInputDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ngx-dropzone>
       <input type="file" fileInput [formControl]="fileCtrl" multiple />
