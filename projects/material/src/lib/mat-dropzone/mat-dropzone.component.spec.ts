@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DebugElement, Type, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DebugElement, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatChipRemove, MatChipRow, MatChipsModule } from '@angular/material/chips';
@@ -119,7 +119,6 @@ describe('MatDropzone', () => {
 @Component({
   selector: 'basic-dropzone',
   imports: [MatFormFieldModule, MatDropzone, FileInputDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <mat-form-field>
       <mat-label>Drop it basic!</mat-label>
@@ -134,7 +133,6 @@ class DropzoneBasic {}
 @Component({
   selector: 'form-control-dropzone',
   imports: [ReactiveFormsModule, MatFormFieldModule, MatIconModule, MatChipsModule, MatDropzone, FileInputDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <mat-form-field>
       <ngx-mat-dropzone>
