@@ -1,18 +1,16 @@
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ContentChild,
   HostBinding,
   HostListener,
   inject,
   Input,
-  OnDestroy,
+  signal,
   ViewEncapsulation,
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { BehaviorSubject, Subject, takeUntil, tap } from 'rxjs';
 import { FileInputDirective, FileInputValue } from './../file-input';
 import { getMissingControlError } from './dropzone-errors';
 import { DropzoneService } from './dropzone.service';
@@ -35,19 +33,17 @@ import { DropzoneService } from './dropzone.service';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DropzoneComponent implements AfterContentInit, OnDestroy {
-  protected _destroy$ = new Subject<void>();
-  protected _changeDetectorRef = inject(ChangeDetectorRef);
+export class DropzoneComponent implements AfterContentInit {
   protected _dropzoneService = inject(DropzoneService);
 
   @ContentChild(FileInputDirective, { static: true })
   readonly fileInputDirective: FileInputDirective | null = null;
 
-  readonly dragover$ = new BehaviorSubject<boolean>(false);
+  readonly dragover = signal(false);
 
   @HostBinding('class.dragover')
   get isDragover() {
-    return this.dragover$.value;
+    return this.dragover();
   }
 
   @HostBinding('class.disabled')
@@ -77,19 +73,6 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
     if (!this.fileInputDirective) {
       throw getMissingControlError();
     }
-
-    // Forward state changes from the child input element.
-    this.fileInputDirective.stateChanges
-      .pipe(
-        tap(() => this._changeDetectorRef.markForCheck()),
-        takeUntil(this._destroy$)
-      )
-      .subscribe();
-  }
-
-  ngOnDestroy(): void {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 
   /** Opens the native OS file picker. */
@@ -113,7 +96,7 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   @HostListener('dragenter', ['$event'])
   _onDragEnter = (event: DragEvent) => {
     event?.preventDefault();
-    this.dragover$.next(true);
+    this.dragover.set(true);
 
     // Indicate to the Browser that files will be copied.
     if (event?.dataTransfer) {
@@ -124,7 +107,7 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
   @HostListener('dragleave', ['$event'])
   _onDragLeave = (event: DragEvent) => {
     event?.preventDefault();
-    this.dragover$.next(false);
+    this.dragover.set(false);
   };
 
   @HostListener('drop', ['$event'])
