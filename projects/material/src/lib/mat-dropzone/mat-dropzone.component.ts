@@ -96,7 +96,14 @@ export class MatDropzone
   autofilled = false;
 
   stateChanges = new Subject<void>();
-  ngControl = this.fileInputDirective?.ngControl ?? null;
+
+  /**
+   * The legacy `NgControl` of the reactive or template-driven forms integration.
+   * Remains `null` when the file input is bound to a signal forms field via `[formField]`.
+   */
+  get ngControl() {
+    return this.fileInputDirective?.ngControl ?? null;
+  }
 
   @Input('aria-describedby')
   userAriaDescribedBy?: string | undefined;
@@ -114,7 +121,7 @@ export class MatDropzone
   @Input()
   get required(): boolean {
     const controlRequired = this.ngControl?.control?.hasValidator(Validators.required);
-    return this._required || controlRequired || false;
+    return this._required || controlRequired || this.fileInputDirective?.required() || false;
   }
   set required(value: boolean) {
     this._required = coerceBoolean(value);
@@ -127,7 +134,7 @@ export class MatDropzone
   }
 
   get empty() {
-    return this.fileInputDirective?.empty || true;
+    return this.fileInputDirective?.empty() ?? true;
   }
 
   get shouldLabelFloat() {

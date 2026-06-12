@@ -180,8 +180,8 @@ All files from subdirectories will be provided as a flat `File[]`, but with an a
 ## Usage with FormControl and validation
 
 The `fileInput` directive on the `<input type="file" />` element makes it a valid target
-for `[(ngModel)]` and `[formControl]` directives, so you can seamlessly integrate the
-file upload into your form.
+for the `[(ngModel)]`, `[formControl]` and `[formField]` directives, so you can seamlessly
+integrate the file upload into your form.
 
 First, make sure to import the `ReactiveFormsModule`.
 Then, you're able to define your form control element (incl. validation).
@@ -225,6 +225,49 @@ The `FileInputValidators` provides custom validator functions for files.
 | `FileInputValidators.accept`  | Defines accepted file types.                  |
 | `FileInputValidators.minSize` | Sets the required minimum file size in bytes. |
 | `FileInputValidators.maxSize` | Sets the maximum allowed file size in bytes.  |
+
+## Usage with Signal Forms
+
+Since Angular v22, [Signal Forms](https://angular.dev/guide/forms/signals) are stable
+and fully supported by this library. The `fileInput` directive implements the
+[`FormValueControl`](https://angular.dev/guide/forms/signals/custom-controls) contract,
+so you can bind a signal form field directly to the `<input type="file" />` element
+using the `[formField]` directive.
+
+```ts
+// in app.component.ts
+import { Component, signal } from '@angular/core';
+import { form, required, FormField } from '@angular/forms/signals';
+import { FileInputDirective, FileInputValue } from '@ngx-dropzone/cdk';
+import { MatDropzone } from '@ngx-dropzone/material';
+
+@Component({
+  selector: 'signal-form-dropzone',
+  imports: [FormField, MatFormField, MatError, MatDropzone, FileInputDirective],
+  template: `
+    <mat-form-field>
+      <ngx-mat-dropzone>
+        <input type="file" fileInput [formField]="profileForm.image" />
+      </ngx-mat-dropzone>
+      <mat-error>The image is required!</mat-error>
+    </mat-form-field>
+  `,
+})
+class DropzoneWithSignalForm {
+  profileModel = signal<{ image: FileInputValue }>({ image: null });
+  profileForm = form(this.profileModel, (path) => {
+    required(path.image);
+  });
+}
+```
+
+The field state (value, touched, required, disabled, validation errors) is kept in sync
+with the file input automatically, including the error state of the surrounding
+`<mat-form-field>`. Validation is defined in the form schema, e.g. with the built-in
+`required()` rule or a custom `validate()` rule.
+
+Of course, the classic reactive forms (`[formControl]`) and template-driven forms
+(`[(ngModel)]`) remain fully supported.
 
 ## File Previews
 

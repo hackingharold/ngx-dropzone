@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, DebugElement, Type } from '@angular/core';
+import { Component, DebugElement, signal, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { form, FormField, validate } from '@angular/forms/signals';
 import { MatChipRemove, MatChipRow, MatChipsModule } from '@angular/material/chips';
 import { MatError, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -114,6 +115,62 @@ describe('MatDropzone', () => {
       expect(error).toBe('Invalid file type!');
     });
   });
+
+  describe('signal forms', () => {
+    let selectors: Selectors<DropzoneWithSignalForm>;
+
+    beforeEach(waitForAsync(() => {
+      selectors = configureDropzoneTestingModule(DropzoneWithSignalForm);
+    }));
+
+    it('should sync the field value with the file input', () => {
+      const field = selectors.fixture.componentInstance.fileForm.file;
+      const validFile = new File(['...'], `my-file.png`);
+
+      field().value.set(validFile);
+      selectors.fixture.detectChanges();
+
+      expect(selectors.fileInput.value()).toEqual(validFile);
+    });
+
+    it('should update the field on file drop', () => {
+      const field = selectors.fixture.componentInstance.fileForm.file;
+      const validFile = new File(['...'], `my-file.png`);
+
+      selectors.fileInput.handleFileDrop([validFile]); // simulate user UI action
+      selectors.fixture.detectChanges();
+
+      expect(field().value()).toEqual(validFile);
+      expect(field().touched()).toBeTrue();
+    });
+
+    it('should render chip', () => {
+      const validFile = new File(['...'], `my-file.png`);
+      selectors.fileInput.handleFileDrop([validFile]); // simulate user UI action
+      selectors.fixture.detectChanges();
+
+      const matChip = selectors.fixture.debugElement.query(By.directive(MatChipRow));
+      expect(matChip).toBeTruthy();
+
+      matChip.query(By.directive(MatChipRemove)).nativeElement.click();
+      selectors.fixture.detectChanges();
+
+      const noChip = selectors.fixture.debugElement.query(By.directive(MatChipRow));
+      expect(noChip).toBeFalsy();
+    });
+
+    it('should render error state', () => {
+      const invalidFile = new File(['...'], `${Date.now()}.pdf`);
+      selectors.fileInput.handleFileDrop([invalidFile]); // simulate user UI action
+      selectors.fixture.detectChanges();
+
+      expect(selectors.element.attributes['aria-invalid']).toBe('true');
+
+      const matError = selectors.fixture.debugElement.query(By.directive(MatError));
+      const error = matError.nativeElement.textContent;
+      expect(error).toBe('Invalid file type!');
+    });
+  });
 });
 
 @Component({
@@ -156,5 +213,40 @@ class DropzoneWithFormControl {
 
   clear() {
     this.control.setValue(null);
+  }
+}
+
+@Component({
+  selector: 'signal-form-dropzone',
+  imports: [FormField, MatFormFieldModule, MatIconModule, MatChipsModule, MatDropzone, FileInputDirective],
+  template: `
+    <mat-form-field>
+      <ngx-mat-dropzone>
+        <input type="file" fileInput [formField]="fileForm.file" />
+        @if (fileForm.file().value(); as file) {
+        <mat-chip-row (removed)="clear()">
+          {{ file.name }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+        }
+      </ngx-mat-dropzone>
+      <mat-error>Invalid file type!</mat-error>
+    </mat-form-field>
+  `,
+})
+class DropzoneWithSignalForm {
+  fileModel = signal<{ file: FileInputValue }>({ file: null });
+  fileForm = form(this.fileModel, (path) => {
+    validate(path.file, ({ value }) => {
+      const file = value();
+      const accepted = !file || (!Array.isArray(file) && file.name.endsWith('.png'));
+      return accepted ? null : { kind: 'accept', message: 'Invalid file type!' };
+    });
+  });
+
+  clear() {
+    this.fileForm.file().value.set(null);
   }
 }

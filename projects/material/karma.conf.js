@@ -33,6 +33,14 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
+    customLaunchers: {
+      // Allows running the tests in containerized environments (e.g. devcontainers)
+      // where the Chrome sandbox is not available.
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu'],
+      },
+    },
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
