@@ -3,12 +3,15 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
-  ContentChildren,
+  contentChildren,
+  effect,
   ElementRef,
   HostBinding,
   inject,
+  Injector,
   Input,
-  QueryList,
+  OnDestroy,
+  untracked,
   ViewEncapsulation,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
@@ -22,7 +25,7 @@ import {
   FileInputDirective,
   FileInputValue,
 } from '@ngx-dropzone/cdk';
-import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'ngx-mat-dropzone',
@@ -77,20 +80,20 @@ import { merge, Observable, Subject, takeUntil, tap } from 'rxjs';
 })
 export class MatDropzone
   extends DropzoneComponent
-  implements MatFormFieldControl<FileInputValue>, AfterContentInit, AfterContentChecked
+  implements MatFormFieldControl<FileInputValue>, AfterContentInit, AfterContentChecked, OnDestroy
 {
   static nextId = 0;
 
   private _elementRef = inject(ElementRef);
   private _formField = inject(MatFormField);
+  private _injector = inject(Injector);
 
   @HostBinding()
   id = `mat-dropzone-component-${MatDropzone.nextId++}`;
 
   controlType = 'ngx-mat-dropzone';
 
-  @ContentChildren(MatChipRow)
-  readonly _matChips!: QueryList<MatChipRow>;
+  readonly _matChips = contentChildren(MatChipRow);
 
   // The file input is never autofilled
   autofilled = false;
@@ -138,7 +141,7 @@ export class MatDropzone
   }
 
   get shouldLabelFloat() {
-    return this._matChips.length > 0;
+    return this._matChips().length > 0;
   }
 
   @HostBinding('attr.aria-invalid')
@@ -156,16 +159,28 @@ export class MatDropzone
   ngAfterContentInit() {
     super.ngAfterContentInit();
 
-    // Forward the stateChanges from the fileInputDirective to the MatFormFieldControl
-    const stateEvents: Observable<unknown>[] = [this.dragover$];
-    if (this.fileInputDirective) stateEvents.push(this.fileInputDirective.stateChanges);
+    // The mat-form-field re-renders only in response to the stateChanges
+    // stream of its MatFormFieldControl, so we bridge every signal the
+    // form field depends on into the stream. Created here (instead of the
+    // constructor) because the fileInputDirective is a content child.
+    effect(
+      () => {
+        this.dragover();
+        this._matChips();
+        this.fileInputDirective?.value();
+        this.fileInputDirective?.focused();
+        this.fileInputDirective?.required();
+        this.fileInputDirective?.disabledState();
+        this.fileInputDirective?.errorState();
 
-    merge(...stateEvents)
-      .pipe(
-        tap(() => this.stateChanges.next()),
-        takeUntil(this._destroy$)
-      )
-      .subscribe();
+        untracked(() => this.stateChanges.next());
+      },
+      { injector: this._injector }
+    );
+  }
+
+  ngOnDestroy() {
+    this.stateChanges.complete();
   }
 
   ngAfterContentChecked() {

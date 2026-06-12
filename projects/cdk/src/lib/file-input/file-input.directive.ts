@@ -1,21 +1,6 @@
-import {
-  computed,
-  Directive,
-  DoCheck,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  model,
-  OnDestroy,
-  OnInit,
-  output,
-  signal,
-  untracked,
-} from '@angular/core';
+import { computed, Directive, DoCheck, ElementRef, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { FORM_FIELD, FormValueControl } from '@angular/forms/signals';
-import { Subject } from 'rxjs';
 import { coerceBoolean, nonNullable } from '../coercion';
 import { AcceptService } from './accept.service';
 import { getArrayValueError, getInputTypeError, getNonArrayValueError } from './file-input-errors';
@@ -33,9 +18,7 @@ import { FileInputMode, FileInputValue } from './file-input-value';
     '(blur)': '_focusChanged(false)',
   },
 })
-export class FileInputDirective
-  implements FormValueControl<FileInputValue>, ControlValueAccessor, OnInit, DoCheck, OnDestroy
-{
+export class FileInputDirective implements FormValueControl<FileInputValue>, ControlValueAccessor, OnInit, DoCheck {
   /**
    * The value of the file input control.
    *
@@ -68,9 +51,6 @@ export class FileInputDirective
 
   /** Emits when the control is touched by the user. Marks the bound signal forms field as touched. */
   readonly touch = output<void>();
-
-  /** Emits whenever the parent dropzone should re-render. */
-  readonly stateChanges = new Subject<void>();
 
   private readonly _focused = signal(false);
   private readonly _disabledByForms = signal(false);
@@ -128,18 +108,6 @@ export class FileInputDirective
       // the providers) to allow access to error state.
       this.ngControl.valueAccessor = this;
     }
-
-    // Notify the parent dropzone whenever any rendering-relevant state changes.
-    effect(() => {
-      this.value();
-      this.accept();
-      this.mode();
-      this.required();
-      this.disabledState();
-      this.errorState();
-
-      untracked(() => this.stateChanges.next());
-    });
   }
 
   ngOnInit() {
@@ -154,10 +122,6 @@ export class FileInputDirective
       const { invalid, touched } = this.ngControl.control ?? {};
       this._reactiveError.set(!!(invalid && (touched || this._parent?.submitted)));
     }
-  }
-
-  ngOnDestroy() {
-    this.stateChanges.complete();
   }
 
   /** Opens the native OS file picker. */
@@ -214,7 +178,6 @@ export class FileInputDirective
   /** Implements the disabled state setter from `ControlValueAccessor`. */
   setDisabledState(disabled: boolean) {
     this._disabledByForms.set(disabled);
-    this.stateChanges.next();
   }
 
   /** Sets the value of the file input control and marks it as touched. */
@@ -225,16 +188,11 @@ export class FileInputDirective
     this.touched.set(true);
     this._onTouched?.();
     this.touch.emit();
-
-    this.stateChanges.next();
   }
 
   /** Called when the input element is focused or blurred. */
   _focusChanged(focused: boolean) {
-    if (this._focused() !== focused) {
-      this._focused.set(focused);
-      this.stateChanges.next();
-    }
+    this._focused.set(focused);
   }
 
   /**
