@@ -1,6 +1,7 @@
-import { Component, DebugElement, Type } from '@angular/core';
+import { Component, DebugElement, signal, Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { getArrayValueError, getNonArrayValueError } from './file-input-errors';
 import { FileInputValue } from './file-input-value';
@@ -57,7 +58,7 @@ describe('FileInputDirective', () => {
 
     it('should throw when not multiple array', () => {
       expect(() => {
-        selectors.fileInput._fileValue = [getFile(), getFile()];
+        selectors.fileInput._setValue([getFile(), getFile()]);
       }).toThrowError(getArrayValueError().message);
     });
 
@@ -68,7 +69,7 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element._handleChange(getFileListEvent([file]));
 
-      expect(element.value).toEqual(file);
+      expect(element.value()).toEqual(file);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
     });
 
@@ -79,7 +80,7 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element.handleFileDrop([file]);
 
-      expect(element.value).toEqual(file);
+      expect(element.value()).toEqual(file);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(file);
     });
 
@@ -87,35 +88,35 @@ describe('FileInputDirective', () => {
       const element = selectors.fileInput;
       const file = getFile();
 
-      element._fileValue = file;
-      expect(element.value).toEqual(file);
+      element._setValue(file);
+      expect(element.value()).toEqual(file);
 
       element.writeValue(null);
-      expect(element.value).toBeNull();
+      expect(element.value()).toBeNull();
     });
 
     it('should return the focused state correctly', () => {
       const element = selectors.fileInput;
       const input = selectors.inputElement.nativeElement as HTMLInputElement;
-      expect(element.focused).toBeFalse();
+      expect(element.focused()).toBeFalse();
 
       input.dispatchEvent(new Event('focus'));
-      expect(element.focused).toBeTrue();
+      expect(element.focused()).toBeTrue();
 
       input.dispatchEvent(new Event('blur'));
-      expect(element.focused).toBeFalse();
+      expect(element.focused()).toBeFalse();
     });
 
     it('should lose focus when disabled', () => {
       const element = selectors.fileInput;
       const input = selectors.inputElement.nativeElement as HTMLInputElement;
-      expect(element.focused).toBeFalse();
+      expect(element.focused()).toBeFalse();
 
       input.dispatchEvent(new Event('focus'));
-      expect(element.focused).toBeTrue();
+      expect(element.focused()).toBeTrue();
 
-      element.disabled = true;
-      expect(element.focused).toBeFalse();
+      element.setDisabledState(true);
+      expect(element.focused()).toBeFalse();
     });
   });
 
@@ -137,23 +138,23 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element.writeValue(testFiles);
 
-      expect(element.value).toEqual(testFiles);
+      expect(element.value()).toEqual(testFiles);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(testFiles);
     });
 
     it('should throw when multiple non-array', () => {
       const element = selectors.fileInput;
       expect(() => {
-        element._fileValue = getFile();
+        element._setValue(getFile());
       }).toThrowError(getNonArrayValueError().message);
     });
 
     it('should return the empty state correctly', () => {
       const element = selectors.fileInput;
-      expect(element.empty).toBeTrue();
+      expect(element.empty()).toBeTrue();
 
-      element._fileValue = [getFile(), getFile()];
-      expect(element.empty).toBeFalse();
+      element._setValue([getFile(), getFile()]);
+      expect(element.empty()).toBeFalse();
     });
 
     it('should handle multiple selection using native change event', () => {
@@ -163,7 +164,7 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element._handleChange(getFileListEvent(files));
 
-      expect(element.value).toEqual(files);
+      expect(element.value()).toEqual(files);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
     });
 
@@ -174,7 +175,7 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element.handleFileDrop(files);
 
-      expect(element.value).toEqual(files);
+      expect(element.value()).toEqual(files);
       expect(element.selectionChange.emit).toHaveBeenCalledWith(files);
     });
 
@@ -184,10 +185,10 @@ describe('FileInputDirective', () => {
       const files2 = [getFile(), getFile()];
 
       element.handleFileDrop(files1);
-      expect(element.value).toEqual(files1);
+      expect(element.value()).toEqual(files1);
 
       element.handleFileDrop(files2);
-      expect(element.value).toEqual(files2);
+      expect(element.value()).toEqual(files2);
     });
 
     it('should replace value with empty array', () => {
@@ -195,10 +196,10 @@ describe('FileInputDirective', () => {
       const files = [getFile(), getFile()];
 
       element.handleFileDrop(files);
-      expect(element.value).toEqual(files);
+      expect(element.value()).toEqual(files);
 
       element.handleFileDrop([]);
-      expect(element.value).toEqual([]);
+      expect(element.value()).toEqual([]);
     });
 
     it('should reset multiple value when overriding value', () => {
@@ -206,10 +207,10 @@ describe('FileInputDirective', () => {
       const files = [getFile(), getFile()];
 
       element.handleFileDrop(files);
-      expect(element.value).toEqual(files);
+      expect(element.value()).toEqual(files);
 
       element.writeValue([]);
-      expect(element.value).toEqual([]);
+      expect(element.value()).toEqual([]);
     });
   });
 
@@ -226,10 +227,10 @@ describe('FileInputDirective', () => {
       const file2 = getFile();
 
       element.handleFileDrop([file]);
-      expect(element.value).toEqual(file);
+      expect(element.value()).toEqual(file);
 
       element.handleFileDrop([file2]);
-      expect(element.value).toEqual(file2);
+      expect(element.value()).toEqual(file2);
     });
   });
 
@@ -246,10 +247,10 @@ describe('FileInputDirective', () => {
       const files2 = [getFile(), getFile()];
 
       element.handleFileDrop(files1);
-      expect(element.value).toEqual(files1);
+      expect(element.value()).toEqual(files1);
 
       element.handleFileDrop(files2);
-      expect(element.value).toEqual([...files1, ...files2]);
+      expect(element.value()).toEqual([...files1, ...files2]);
     });
   });
 
@@ -264,12 +265,54 @@ describe('FileInputDirective', () => {
       const element = selectors.fileInput;
       const formControl = selectors.inputElement.componentInstance.fileCtrl as FormControl<FileInputValue>;
       expect(formControl.touched).toBeFalse();
-      expect(element.errorState).toBeFalse();
+      expect(element.errorState()).toBeFalse();
 
       formControl.markAsTouched();
       selectors.fixture.detectChanges();
       expect(formControl.touched).toBeTrue();
-      expect(element.errorState).toBeTrue();
+      expect(element.errorState()).toBeTrue();
+    });
+  });
+
+  describe('signal forms', () => {
+    let selectors: Selectors<FileInputWithFormField>;
+
+    beforeEach(waitForAsync(() => {
+      selectors = configureFileInputTestingModule(FileInputWithFormField);
+    }));
+
+    it('should sync the field value into the file input', () => {
+      const field = selectors.fixture.componentInstance.fileForm.file;
+      const file = getFile();
+
+      field().value.set(file);
+      selectors.fixture.detectChanges();
+
+      expect(selectors.fileInput.value()).toEqual(file);
+    });
+
+    it('should update the field on file selection', () => {
+      const field = selectors.fixture.componentInstance.fileForm.file;
+      const file = getFile();
+
+      selectors.fileInput.handleFileDrop([file]);
+      selectors.fixture.detectChanges();
+
+      expect(field().value()).toEqual(file);
+      expect(field().touched()).toBeTrue();
+    });
+
+    it('should bind the required and error state', () => {
+      const field = selectors.fixture.componentInstance.fileForm.file;
+      selectors.fixture.detectChanges();
+
+      expect(selectors.fileInput.required()).toBeTrue();
+      expect(selectors.fileInput.errorState()).toBeFalse();
+
+      field().markAsTouched();
+      selectors.fixture.detectChanges();
+
+      expect(selectors.fileInput.errorState()).toBeTrue();
     });
   });
 
@@ -282,10 +325,18 @@ describe('FileInputDirective', () => {
 
     it('should return disabled state correctly', () => {
       const element = selectors.fileInput;
-      expect(element.disabled).toBeTrue();
+      expect(element.disabled()).toBeTrue();
+      expect(element.disabledState()).toBeTrue();
+    });
 
-      expect(element.setDisabledState(false));
-      expect(element.disabled).toBeFalse();
+    it('should combine the disabled attribute with the forms state', () => {
+      const element = selectors.fileInput;
+      element.setDisabledState(true);
+      expect(element.disabledState()).toBeTrue();
+
+      // The static `disabled` attribute still takes precedence.
+      element.setDisabledState(false);
+      expect(element.disabledState()).toBeTrue();
     });
 
     it('should not handle selection when disabled', () => {
@@ -295,7 +346,7 @@ describe('FileInputDirective', () => {
       spyOn(element.selectionChange, 'emit');
       element.handleFileDrop([file]);
 
-      expect(element.value).toBeNull();
+      expect(element.value()).toBeNull();
       expect(element.selectionChange.emit).not.toHaveBeenCalled();
     });
   });
@@ -332,6 +383,17 @@ class FileInputMultipleAppend {}
 })
 class FileInputWithFormControl {
   fileCtrl = new FormControl<FileInputValue>(null, [Validators.required]);
+}
+
+@Component({
+  imports: [FormField, FileInputDirective],
+  template: `<input fileInput type="file" [formField]="fileForm.file" />`,
+})
+class FileInputWithFormField {
+  fileModel = signal<{ file: FileInputValue }>({ file: null });
+  fileForm = form(this.fileModel, (path) => {
+    required(path.file);
+  });
 }
 
 @Component({

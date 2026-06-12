@@ -7,10 +7,12 @@
     "start:cdk": "ng build --watch --project=cdk",
     "build:cdk": "ng build cdk --configuration production",
     "test:cdk": "ng test cdk --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:cdk:dev": "CHROME_BIN=/usr/bin/chromium ng test cdk --no-watch --no-progress --browsers=ChromeHeadlessNoSandbox",
     "lint:cdk": "ng lint cdk",
     "start:material": "ng build --watch --project=material",
     "build:material": "ng build material --configuration production",
     "test:material": "ng test material --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:material:dev": "CHROME_BIN=/usr/bin/chromium ng test material --no-watch --no-progress --browsers=ChromeHeadlessNoSandbox",
     "lint:material": "ng lint material"
   },
   "dependencies": {

@@ -49,7 +49,7 @@ describe('DropzoneComponent', () => {
     });
 
     it('should forward the focused property', () => {
-      expect(selectors.fileInput.focused).toBeFalse();
+      expect(selectors.fileInput.focused()).toBeFalse();
       expect(selectors.component.focused).toBeFalse();
 
       selectors.inputElement.nativeElement.dispatchEvent(new Event('focus'));
@@ -93,7 +93,7 @@ describe('DropzoneComponent', () => {
     }));
 
     it('should forward the disabled property', () => {
-      expect(selectors.fileInput.disabled).toBeFalse();
+      expect(selectors.fileInput.disabledState()).toBeFalse();
       expect(selectors.component.disabled).toBeFalse();
 
       selectors.fileInput.ngControl?.control?.disable();
@@ -116,7 +116,7 @@ describe('DropzoneComponent', () => {
       selectors.fixture.detectChanges();
 
       expect(selectors.element.nativeElement.classList).not.toContain('dragover');
-      expect((selectors.fileInput.value as File[]).length).toEqual(3);
+      expect((selectors.fileInput.value() as File[]).length).toEqual(3);
     });
 
     it('should apply form control state classes', () => {

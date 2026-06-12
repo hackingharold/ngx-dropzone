@@ -52,27 +52,25 @@ export class DropzoneComponent implements AfterContentInit, OnDestroy {
 
   @HostBinding('class.disabled')
   get disabled(): boolean {
-    return this.fileInputDirective?.disabled || false;
+    return this.fileInputDirective?.disabledState() || false;
   }
 
   @HostBinding('class.focused')
   get focused(): boolean {
-    return this.fileInputDirective?.focused || this.isDragover;
+    return this.fileInputDirective?.focused() || this.isDragover;
   }
 
   @HostBinding('attr.aria-invalid')
   get errorState() {
-    return this.fileInputDirective?.errorState || false;
+    return this.fileInputDirective?.errorState() || false;
   }
 
   @Input()
   get value() {
-    return this.fileInputDirective?.value || null;
+    return this.fileInputDirective?.value() || null;
   }
   set value(newValue: FileInputValue) {
-    if (this.fileInputDirective) {
-      this.fileInputDirective._fileValue = newValue;
-    }
+    this.fileInputDirective?._setValue(newValue);
   }
 
   ngAfterContentInit() {
