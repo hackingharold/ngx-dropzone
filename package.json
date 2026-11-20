@@ -37,8 +37,8 @@
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "^7",
     "@types/node": "^26.6.6",
-    "angular-eslint": "^22.6.0",
-    "eslint": "^10.14.0",
+    "angular-eslint": "^22.7.0",
+    "eslint": "^10.15.0",
     "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "6.3.0",
     "jsdom": "^31.0.0",
@@ -49,7 +49,7 @@
     "karma-jasmine-html-reporter": "~2.3.0",
     "ng-packagr": "^22.2.6",
     "typescript": "6.0.3",
-    "typescript-eslint": "^8.72.2",
+    "typescript-eslint": "^8.73.0",
     "vitest": "^4.1.12"
   }
 }
